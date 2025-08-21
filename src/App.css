@@ -1,7 +1,56 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
+
+@layer components {
+  nav {
+    background: #1d293f1f;
+  }
+
+  .head {
+    background-image: url("../utils//herobg.svg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position-x: center;
+  }
+
+  .find::after {
+    content: " ";
+    position: absolute;
+    left: -2.5%;
+    top: -25%;
+    width: 105%;
+    z-index: -1;
+    height: 150%;
+    background: rgba(255, 255, 255, 20%);
+  }
+
+  h1 {
+    font-family: Outfit, sans-serif;
+  }
+
+  .text-logo {
+    background: #3d9970;
+  }
+}
+
 #root {
-  max-width: 1440px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 0;
   text-align: center;
   box-sizing: border-box;
+  font-family: Poppins, sans-serif;
+}
+
+body {
+  background: #646262;
+  height: 150vh;
+}
+
+.auth-btn {
+  border-radius: 8px;
+}
+
+ul > a:hover {
+  text-decoration: underline solid #fff 1px;
+  text-underline-offset: 8px;
 }
