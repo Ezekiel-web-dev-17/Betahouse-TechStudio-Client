@@ -1,7 +1,8 @@
 import logo from "../../utils/bhlogo.png";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const NavBar = () => {
+  const location = useLocation();
   return (
     <nav className="w-full max-w-screen px-20 py-8 fixed top-0 flex items-center justify-between z-20">
       <Link to="/">
@@ -10,7 +11,16 @@ const NavBar = () => {
 
       <ul className="flex gap-x-10 text-[19px] font-medium text-white text-nowrap">
         <Link to="/">Home</Link>
-        <Link to="/properties">Properties</Link>
+        <Link
+          to="/properties"
+          className={`${
+            location.pathname === "/properties"
+              ? "underline decoration-1 underline-offset-10"
+              : ""
+          }`}
+        >
+          Properties
+        </Link>
         <Link className="cursor-not-allowed opacity-55" aria-disabled="true">
           About Us
         </Link>

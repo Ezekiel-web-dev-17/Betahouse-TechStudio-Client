@@ -48,10 +48,14 @@ const discoverApi = [
 const Discover = () => {
   const discoverRef = useRef(null);
   const [index, setIndex] = useState(0);
+  const [activeLeft, setActiveLeft] = useState(false);
+  const [activeRight, setActiveRight] = useState(false);
   const itemWidth = 265; // width of one card (adjust if needed)
   const maxIndex = 3;
 
   const handleSwipeRight = (e) => {
+    setActiveLeft(false);
+    setActiveRight(true);
     e.preventDefault();
     if (index < maxIndex) {
       setIndex(index + 1);
@@ -59,6 +63,8 @@ const Discover = () => {
   };
 
   const handleSwipeLeft = (e) => {
+    setActiveLeft(true);
+    setActiveRight(false);
     e.preventDefault();
     if (index > 0) {
       setIndex(index - 1);
@@ -73,11 +79,14 @@ const Discover = () => {
       <img
         src={backArr}
         alt="Back Arrow"
-        className={`text-white outline-2 outline-zinc-500 rounded-4xl py-5 px-4 absolute top-1/2 z-10 -left-8 drop-shadow-xl/50 ${
+        className={`bg-[#3d9970] ${
+          activeLeft ? "opacity-100" : "opacity-70"
+        } outline-2 outline-zinc-500 rounded-3xl p-5 px-4 absolute top-1/2 z-10 -left-8 drop-shadow-xl/50 ${
           index > 0 ? "cursor-pointer" : "cursor-not-allowed"
         }`}
         onClick={handleSwipeLeft}
       />
+
       <div className="overflow-x-hidden text-white w-full">
         <div
           className="w-9/10 flex gap-x-9 items-center"
@@ -106,8 +115,10 @@ const Discover = () => {
       <img
         src={nextArr}
         alt="Next Arrow"
-        className={`text-logo rounded-4xl py-5 px-4 absolute top-1/2 z-10 -right-8 drop-shadow-xl/50 ${
-          maxIndex > index ? "cursor-pointer" : "cursor-not-allowed"
+        className={`${
+          activeRight ? "opacity-100" : "opacity-70"
+        } bg-[#3d9970] rounded-4xl outline-2 outline-zinc-500 py-5 px-4 absolute top-1/2 z-10 -right-8 drop-shadow-xl/50 ${
+          maxIndex > index ? "cursor-pointer" : "cursor-not-allowed "
         }`}
         onClick={handleSwipeRight}
       />
