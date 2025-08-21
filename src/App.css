@@ -41,6 +41,7 @@
   text-align: center;
   box-sizing: border-box;
   font-family: Poppins, sans-serif;
+  --accent-color: #3d9970;
 }
 
 .auth-btn {
