@@ -1,7 +1,7 @@
 import React from "react";
 
 const Properties = () => {
-  return <div>Properties</div>;
+  return <main>Properties</main>;
 };
 
 export default Properties;

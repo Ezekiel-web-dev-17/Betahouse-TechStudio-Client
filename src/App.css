@@ -24,7 +24,9 @@
     background: rgba(255, 255, 255, 20%);
   }
 
-  h1 {
+  h1,
+  h3,
+  h5 {
     font-family: Outfit, sans-serif;
   }
 
@@ -39,11 +41,6 @@
   text-align: center;
   box-sizing: border-box;
   font-family: Poppins, sans-serif;
-}
-
-body {
-  background: #646262;
-  height: 150vh;
 }
 
 .auth-btn {

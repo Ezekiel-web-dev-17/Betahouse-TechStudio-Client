@@ -7,7 +7,7 @@ const Header = () => {
     <div className="h-screen place-content-center head">
       <div className="mb-6 flex flex-col gap-10 text-white">
         <h1 className="font-extrabold text-7xl">Browse Our Properties</h1>
-        <p className=" font-normal">
+        <p className="font-normal text-2xl w-1/2 text-wrap place-self-center">
           Find your perfect home among our curated properties. Start browsing
           now!
         </p>
