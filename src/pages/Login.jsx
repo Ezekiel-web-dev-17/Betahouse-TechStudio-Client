@@ -5,6 +5,8 @@ import line16 from "../../utils/Line 16.svg";
 import { Link, useNavigate } from "react-router-dom";
 import { ApiContext } from "../ApiContext";
 import { toast } from "react-toastify";
+import { GoogleLogin } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -85,7 +87,7 @@ const Login = () => {
           {/* Sign in button */}
           <button
             type="submit"
-            className="py-3 text-lg font-semibold bg-[var(--accent-color)] rounded-xl text-white w-full"
+            className="py-3 text-lg font-semibold bg-[var(--accent-color)] rounded-xl text-white w-full cursor-pointer"
           >
             Sign In
           </button>
@@ -96,6 +98,43 @@ const Login = () => {
             <p className="text-gray-500">or</p>
             <img src={line16} alt="" />
           </div>
+
+          <GoogleLogin
+            text="signin_with"
+            onSuccess={async (credentialResponse) => {
+              const userInfo = jwtDecode(credentialResponse.credential);
+              const data = {
+                email: userInfo.email,
+                email_verified: userInfo.email_verified,
+                // Indicating this is a Google sign-in
+              };
+              try {
+                const res = await myApi.post("/auth/sign-in", data);
+
+                const { firstname, lastname, email } = res.data.data.user;
+                console.log(firstname);
+                localStorage.clear;
+                localStorage.setItem("firstName", firstname);
+                localStorage.setItem("lastName", lastname);
+                localStorage.setItem("userEmail", email);
+                localStorage.setItem("token", res.data.data.token);
+                navigate("/");
+              } catch (error) {
+                if (error?.response?.status === 404) {
+                  toast.error("User not found. Please sign up first.");
+                  return;
+                }
+                console.error("Error during Google login:", error);
+                toast.error(
+                  error?.response?.data?.error ||
+                    "Login failed. Please try again."
+                );
+                return;
+              }
+            }}
+            onError={() => alert("Login Failed")}
+            auto_select={true}
+          />
 
           <p className="text-center text-sm text-gray-700 cursor-pointer">
             Don’t have an account?{" "}

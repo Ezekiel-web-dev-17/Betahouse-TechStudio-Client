@@ -5,6 +5,9 @@ import line16 from "../../utils/Line 16.svg";
 import { Link, useNavigate } from "react-router-dom";
 import { ApiContext } from "../ApiContext";
 import { toast } from "react-toastify";
+import { GoogleLogin } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
+import { v4 as uuidv4 } from "uuid";
 
 const SignUp = () => {
   const [signUp, setSignUp] = useState({
@@ -37,6 +40,7 @@ const SignUp = () => {
     }
   };
 
+  console.log("Google Client ID:", import.meta.env.VITE_CLIENT_ID);
   return (
     <div className="flex min-h-screen w-full">
       {/* Left side form */}
@@ -148,7 +152,7 @@ const SignUp = () => {
           {/* Submit */}
           <button
             type="submit"
-            className="py-3 text-lg font-semibold bg-[var(--accent-color)] w-full rounded-xl text-white"
+            className="py-3 text-lg font-semibold bg-[var(--accent-color)] w-full rounded-xl text-white cursor-pointer"
           >
             Sign Up
           </button>
@@ -158,6 +162,51 @@ const SignUp = () => {
             <img src={line13} alt="" />
             <p className="text-gray-500 text-sm">or</p>
             <img src={line16} alt="" />
+          </div>
+
+          <div className="w-full">
+            <GoogleLogin
+              text="signup_with"
+              onSuccess={async (credentialResponse) => {
+                const userInfo = jwtDecode(credentialResponse.credential);
+                const data = {
+                  firstName: userInfo.given_name,
+                  lastName: userInfo.family_name,
+                  email: userInfo.email,
+                  password: uuidv4(),
+                };
+                try {
+                  const res = await myApi.post("/auth/sign-up", data);
+
+                  const { firstname, lastname, email } = res.data.data.user;
+                  localStorage.clear();
+                  localStorage.setItem("firstName", firstname);
+                  localStorage.setItem("lastName", lastname);
+                  localStorage.setItem("userEmail", email);
+                  navigate("/");
+                } catch (error) {
+                  if (error.response?.status === 409) {
+                    toast.error("User already exists. Please sign in.");
+                    navigate("/sign-in");
+                    return;
+                  }
+                  toast.error(
+                    error.response?.data?.message ||
+                      "Something went wrong. Please try again later."
+                  );
+                  console.error(
+                    "Error during sign-up:",
+                    error?.response?.data || error
+                  );
+                }
+              }}
+              onError={(e) =>
+                toast.error(
+                  e?.response?.data?.error || "Login failed. Please try again."
+                )
+              }
+              auto_select={true}
+            />
           </div>
 
           {/* Login link */}
