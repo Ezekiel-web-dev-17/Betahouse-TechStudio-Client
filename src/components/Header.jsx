@@ -40,9 +40,12 @@ const Header = () => {
     setPropertiesFromApi(response.data.properties);
   };
   return (
-    <div className="h-screen place-content-center head">
+    <div className="h-screen place-content-center head ">
       <div className="mb-6 flex flex-col gap-10 text-white">
-        <h1 className="font-extrabold text-7xl">Browse Our Properties</h1>
+        <h1 className="font-extrabold text-4xl text-wrap md:text-5xl md:mt-9">
+          Browse
+          <br className="md:hidden" /> Our Properties
+        </h1>
         <p className="font-normal text-xl w-1/2 text-wrap place-self-center">
           Find your perfect home among our curated properties. Start browsing
           now!
@@ -51,10 +54,10 @@ const Header = () => {
         <form
           method="POST"
           onSubmit={filterSubmit}
-          className=" bg-amber-50 flex gap-x-6 w-3/4 place-self-center rounded-2xl find z-10 relative after:rounded-xl"
+          className=" bg-amber-50 w-1/4 min-w-1/2 flex gap-x-6 flex-col lg:flex-row lg:w-3/4 place-self-center rounded-xl lg:rounded-2xl find z-10 relative after:rounded-xl after:w-[120%] after:-left-5 md:after:-left-9 lg:after:-left-[2.5%] lg:after:w-[105%] after:h-[120%] after:-top-6  lg:after:-top-1/4 lg:after:h-[150%]"
         >
-          <div className="filter text-black flex justify-between px-5 py-3 w-full font-semibold">
-            <div className="by-location w-1/4">
+          <div className="filter items-center text-black flex flex-col lg:flex-row justify-between lg:ps-5 py-3 w-full font-semibold">
+            <div className="by-location lg:w-1/4">
               <h5>LOCATION</h5>
               <input
                 name="location"
@@ -65,18 +68,18 @@ const Header = () => {
                 onChange={filterChange}
               />
             </div>
-            <div className="by-type border-x-4 border-gray-300 w-1/2">
+            <div className="by-type border-y-2 lg:border-x-4 lg:border-y-0 py-3 lg:py-0 place-content-center border-gray-300 w-full lg:w-1/2">
               <h5>PROPERTY-TYPE</h5>
               <input
                 name="type"
-                className="opacity-75 font-normal px-3 py-1 max-w-70 w-fit rounded-[5px]"
+                className="opacity-75 font-normal px-3 py-1 lg:max-w-70 w-40 lg:w-fit rounded-[5px]"
                 type="text"
                 placeholder="e.g Duplex, Bedroom Flat"
                 value={filterBy.type}
                 onChange={filterChange}
               />
             </div>
-            <div className="by-bedrooms w-1/4 flex flex-col items-center gap-2">
+            <div className="by-bedrooms lg:w-1/4 flex flex-col items-center gap-2">
               <h5>BEDROOM</h5>
               <div className="items-center flex w-fulll gap-4 flex-nowrap">
                 <img
@@ -109,7 +112,7 @@ const Header = () => {
           </div>
           <button
             type="submit"
-            className="rounded-2xl rounded-s-none text-white text-xl text-logo min-w-1/4 cursor-pointer"
+            className="rounded-b-xl rounded-t-none lg:rounded-e-2xl lg:rounded-s-none text-white text-xl text-logo min-w-1/4 cursor-pointer py-2"
           >
             Find Property
           </button>

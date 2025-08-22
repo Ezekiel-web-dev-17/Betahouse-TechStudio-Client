@@ -16,11 +16,7 @@
   .find::after {
     content: " ";
     position: absolute;
-    left: -2.5%;
-    top: -25%;
-    width: 105%;
     z-index: -1;
-    height: 150%;
     background: rgba(255, 255, 255, 20%);
   }
 
