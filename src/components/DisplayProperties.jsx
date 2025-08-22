@@ -51,7 +51,7 @@ const DisplayProperties = () => {
 
   console.log(properties);
   return (
-    <section className="px-34 pt-15 relative">
+    <section className="px-10 lg:px-34 pt-15 relative">
       {loading && LoaderComp}
 
       {filterMode && (
@@ -79,24 +79,24 @@ const DisplayProperties = () => {
         </div>
       )}
       {!filterMode && (
-        <div className="flex items-center justify-between text-xl font-medium">
-          <div className=" flex gap-x-10">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-3 text-[16px] sm:text-xl font-medium">
+          <div className=" flex flex-col md:flex-row gap-x-10">
             <div className="more-filter flex gap-4">
               <img src={filterImg} alt="" />
-              <p>More Filter</p>
+              <p className="text-nowrap">More Filter</p>
             </div>
-            <p>
+            <p className="text-nowrap">
               Showing {active === 1 ? "1 - 9 of 15" : "10 - 15"} of 15 results
             </p>
           </div>
 
-          <div className="flex items-center gap-4 relative">
-            <p className="opacity-60 text-xl">Sort by: </p>
+          <div className="flex items-center gap-1 lg:gap-4 relative lg:w-1/4">
+            <p className="opacity-60 text-xl text-nowrap">Sort by: </p>
 
             <select
               name=""
               id=""
-              className="text-xl font-semibold px-4 appearance-none bg-white  py-2 pr-8 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500
+              className="text-[16px] lg:text-xl font-semibold px-4 appearance-none bg-white py-1 lg:py-2 ps-1 lg:pr-8 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 max-w-8/12
     "
             >
               <option value="Default">Default</option>
@@ -105,17 +105,17 @@ const DisplayProperties = () => {
               <option value="Price: High to Low">Price: High to Low</option>
             </select>
 
-            <IoIosArrowDown className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500" />
+            <IoIosArrowDown className="absolute right-1 lg:right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500" />
           </div>
         </div>
       )}
       {error && toast.error(error)}
 
-      <div className="properties grid grid-cols-3 gap-4 mt-4">
+      <div className="properties grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
         {properties.map((property) => (
           <div
             key={property._id}
-            className="rounded-xl border-2 border-gray-300 min-w-1/3"
+            className="rounded-xl border-2 border-gray-300 min-w-3/4 md:min-w-1/3"
           >
             <div className="max-h-[265px] overflow-hidden relative">
               <div className="justify-between space-between">
@@ -162,7 +162,7 @@ const DisplayProperties = () => {
               <div className="flex gap-2 items-center">
                 <BsFillGeoAltFill className="opacity-40" /> {property.location}
               </div>
-              <div className="flex gap-6">
+              <div className="flex gap-6 flex-col lg:flex-row">
                 <div className="bed-sect flex gap-2 items-center">
                   <img src={bed} />
                   <p>{property.bed} Bedrooms</p>
@@ -172,13 +172,13 @@ const DisplayProperties = () => {
                   <p>{property.bath} Bathrooms</p>
                 </div>
               </div>
-              <div className="border-t-2 border-gray-300 flex justify-between pt-3">
-                <h4 className="font-semibold text-2xl opacity-70">
+              <div className="border-t-2 border-gray-300 flex flex-col lg:flex-row justify-between pt-3">
+                <h4 className="font-semibold lg:text-2xl text-xl opacity-70 pb-2 lg:px-0">
                   ₦{Number(property.amount).toLocaleString()}
                   {property.whatFor === "Rent" ? "/1Year" : ""}
                 </h4>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 place-content-center lg:place-content-end">
                   <img
                     width="20px"
                     src={arrowToFro}

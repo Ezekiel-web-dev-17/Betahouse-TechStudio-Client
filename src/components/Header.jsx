@@ -40,9 +40,12 @@ const Header = () => {
     setPropertiesFromApi(response.data.properties);
   };
   return (
-    <div className="h-screen place-content-center head ">
+    <div
+      className="[@media(width:320px)]:h-[140vh]
+ h-screen place-content-center head "
+    >
       <div className="mb-6 flex flex-col gap-10 text-white">
-        <h1 className="font-extrabold text-4xl text-wrap md:text-5xl md:mt-9">
+        <h1 className="font-extrabold text-4xl mt-12 text-wrap md:text-5xl md:mt-9">
           Browse
           <br className="md:hidden" /> Our Properties
         </h1>
