@@ -51,9 +51,11 @@ const Discover = () => {
   const [activeLeft, setActiveLeft] = useState(false);
   const [activeRight, setActiveRight] = useState(false);
   const itemWidth = 265; // width of one card (adjust if needed)
-  const maxIndex = 3;
+  const maxIndex = 1;
+  const mobile = window.innerWidth;
 
   const handleSwipeRight = (e) => {
+    if (mobile <= 1270) return;
     setActiveLeft(false);
     setActiveRight(true);
     e.preventDefault();
@@ -63,6 +65,7 @@ const Discover = () => {
   };
 
   const handleSwipeLeft = (e) => {
+    if (mobile <= 1270) return;
     setActiveLeft(true);
     setActiveRight(false);
     e.preventDefault();
@@ -71,11 +74,11 @@ const Discover = () => {
     }
   };
   return (
-    <section className="m-20 flex flex-col gap-10 px-14 relative">
+    <section className="my-18 mx-10 lg:m-20 flex flex-col gap-10 lg:px-14 relative">
       <h3 className="font-semibold text-4xl">
         Discover Our Popular Properties
       </h3>
-
+      {mobile <= 1270 && <h6>Scroll to view more.</h6>}
       <img
         src={backArr}
         alt="Back Arrow"
@@ -87,17 +90,22 @@ const Discover = () => {
         onClick={handleSwipeLeft}
       />
 
-      <div className="overflow-x-hidden text-white w-full">
+      <div className="overflow-x-scroll lg:overflow-x-hidden text-white w-full">
         <div
           className="w-9/10 flex gap-x-9 items-center"
           ref={discoverRef}
           style={{
-            transform: `translateX(-${index * (itemWidth + 45)}px)`,
+            transform: `translateX(-${
+              index * (itemWidth + itemWidth * 2 + 41)
+            }px)`,
             transition: "transform 0.5s ease-in-out",
           }}
         >
           {discoverApi.map((discover, i) => (
-            <div key={i} className="disc relative min-w-1/4">
+            <div
+              key={i}
+              className="disc relative min-w-11/12 sm:min-w-5/12 lg:min-w-1/4"
+            >
               <img src={discover.image} alt="Discover properties first image" />
               <div className="absolute bottom-0 w-4/4 flex flex-col items-start gap-2 rounded-b-xl bg-[#4a4a4c33] p-4 backdrop-blur-xs">
                 <h5 className="font-semibold text-xl">{discover.title}</h5>

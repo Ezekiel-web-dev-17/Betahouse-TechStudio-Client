@@ -34,7 +34,7 @@ const Footer = () => {
 
         {/* Menu Links */}
         <div className="menu flex flex-col sm:flex-row justify-between w-full md:w-2/3 gap-10 sm:gap-20">
-          <div className="links flex flex-col items-start gap-4">
+          <div className="links flex flex-col items-center gap-4">
             <h4 className="font-semibold text-lg md:text-xl opacity-50">
               Quick Links
             </h4>
@@ -49,14 +49,14 @@ const Footer = () => {
             <a className="cursor-not-allowed opacity-50">Blog</a>
           </div>
 
-          <div className="links flex flex-col items-start gap-4 opacity-50">
+          <div className="links flex flex-col items-center gap-4 opacity-50">
             <h4 className="font-semibold text-lg md:text-xl">More</h4>
             <a className="cursor-not-allowed">Agents</a>
             <a className="cursor-not-allowed">Affordable Houses</a>
             <a className="cursor-not-allowed">FAQ's</a>
           </div>
 
-          <div className="links flex flex-col items-start gap-4 opacity-50">
+          <div className="links flex flex-col items-center gap-4 opacity-50">
             <h4 className="font-semibold text-lg md:text-xl">Popular Search</h4>
             <a className="cursor-not-allowed">Apartment for sale</a>
             <a className="cursor-not-allowed">Apartment for rent</a>
