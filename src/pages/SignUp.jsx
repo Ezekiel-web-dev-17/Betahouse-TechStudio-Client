@@ -15,12 +15,10 @@ const SignUp = () => {
     confirmPass: "",
   });
   const myApi = useContext(ApiContext);
-  const navigator = useNavigate();
+  const navigate = useNavigate();
 
-  const changeSignUpInput = (e) => {
-    e.preventDefault();
+  const changeSignUpInput = (e) =>
     setSignUp({ ...signUp, [e.target.name]: e.target.value });
-  };
 
   const submitting = async (e) => {
     e.preventDefault();
@@ -30,142 +28,154 @@ const SignUp = () => {
         toast.success(
           "Account created ✔️. Let’s find your dream property today."
         );
-        navigator("/");
+        navigate("/");
       } else {
-        const error = new Error(
-          "Confirmed password is not same as the inputed password"
-        );
-
-        throw error;
+        throw new Error("Confirmed password does not match the password");
       }
     } catch (error) {
-      toast.error(error.message, {
-        position: "top-center",
-      });
+      toast.error(error.message, { position: "top-center" });
     }
   };
+
   return (
-    <div className="flex flex-row w-full justify-between items-center">
-      <form
-        className=" w-6/12 px-20 py-15 flex flex-col items-start gap-8"
-        onSubmit={submitting}
-      >
-        <div className="intro flex flex-col gap-2  items-start">
-          <h1 className="font-semibold text-2xl/tight text-start pe-8">
-            Join our community of home seekers and explore the possibilities
-            that await.{" "}
-          </h1>
-          <p className="font-normal text-[16px]">
-            Lets get started by filling out the information below
-          </p>
-        </div>
+    <div className="flex min-h-screen w-full">
+      {/* Left side form */}
+      <div className="flex w-full lg:w-1/2 items-center justify-center p-6 lg:p-20">
+        <form
+          onSubmit={submitting}
+          className="bg-white/90 backdrop-blur-md shadow-lg rounded-2xl w-full max-w-md p-8 flex flex-col gap-6"
+        >
+          {/* Intro */}
+          <div className="flex flex-col gap-2">
+            <h1 className="font-semibold text-2xl text-gray-900">
+              Join our community of home seekers
+            </h1>
+            <p className="text-gray-600 text-sm">
+              Let’s get started by filling out the information below
+            </p>
+          </div>
 
-        <div className="names flex gap-7 max-w-full">
-          <div className="flex flex-col items-start gap-1 w-4/5">
-            <label className="text-[16px] font-normal">First Name</label>
+          {/* Name inputs */}
+          <div className="flex gap-4 w-full">
+            <div className="flex flex-col gap-1 w-1/2">
+              <label className="text-sm font-medium lg:text-start">
+                First Name
+              </label>
+              <input
+                name="firstName"
+                type="text"
+                value={signUp.firstName}
+                onChange={changeSignUpInput}
+                placeholder="Enter first name"
+                className="px-4 py-3 rounded-xl border-2 border-gray-300 focus:border-gray-700 w-full"
+              />
+            </div>
+            <div className="flex flex-col gap-1 w-1/2">
+              <label className="text-sm font-medium lg:text-start">
+                Last Name
+              </label>
+              <input
+                name="lastName"
+                type="text"
+                value={signUp.lastName}
+                onChange={changeSignUpInput}
+                placeholder="Enter last name"
+                className="px-4 py-3 rounded-xl border-2 border-gray-300 focus:border-gray-700 w-full"
+              />
+            </div>
+          </div>
+
+          {/* Email */}
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium lg:text-start">Email</label>
             <input
-              name="firstName"
-              type="text"
-              className="px-4 py-3 rounded-xl border-2 border-gray-300 focus:border-gray-700"
-              placeholder="Enter Name"
-              value={signUp.firstName}
+              name="email"
+              type="email"
+              value={signUp.email}
               onChange={changeSignUpInput}
+              placeholder="Enter your email"
+              className="px-4 py-3 rounded-xl border-2 border-gray-300 focus:border-gray-700 w-full"
             />
           </div>
-          <div className="flex flex-col items-start gap-1 w-4/5">
-            <label className="text-[16px] font-normal">Last Name</label>
+
+          {/* Password */}
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium lg:text-start">
+              Password
+            </label>
             <input
-              name="lastName"
-              type="text"
-              placeholder="Enter Name"
-              className="px-4 py-3 rounded-xl border-2 border-gray-300 focus:border-gray-700"
-              value={signUp.lastName}
+              name="password"
+              type="password"
+              value={signUp.password}
               onChange={changeSignUpInput}
+              placeholder="Enter your password"
+              className="px-4 py-3 rounded-xl border-2 border-gray-300 focus:border-gray-700 w-full"
             />
           </div>
-        </div>
 
-        <div className="email flex flex-col items-start gap-1 w-full">
-          <label className="text-[16px] font-normal">Email</label>
-          <input
-            name="email"
-            type="email"
-            className="px-4 py-3 rounded-xl border-2 border-gray-300 focus:border-gray-700 w-full"
-            placeholder="Enter your Email"
-            value={signUp.email}
-            onChange={changeSignUpInput}
-          />
-        </div>
+          {/* Confirm Password */}
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium lg:text-start">
+              Confirm Password
+            </label>
+            <input
+              name="confirmPass"
+              type="password"
+              value={signUp.confirmPass}
+              onChange={changeSignUpInput}
+              placeholder="Confirm your password"
+              className="px-4 py-3 rounded-xl border-2 border-gray-300 focus:border-gray-700 w-full"
+            />
+          </div>
 
-        <div className="password flex flex-col items-start gap-1 w-full">
-          <label className="text-[16px] font-normal">Password</label>
-          <input
-            name="password"
-            type="password"
-            placeholder="Enter your password"
-            className="px-4 py-3 rounded-xl border-2 border-gray-300 focus:border-gray-700 w-full"
-            value={signUp.password}
-            onChange={changeSignUpInput}
-          />
-        </div>
-
-        <div className="confirm-pass flex flex-col items-start gap-1 w-full">
-          <label className="text-[16px] font-normal">Confirm Password</label>
-          <input
-            name="confirmPass"
-            type="password"
-            placeholder="Confirm your password"
-            className="px-4 py-3 rounded-xl border-2 border-gray-300 focus:border-gray-700 w-full"
-            value={signUp.confirmPass}
-            onChange={changeSignUpInput}
-          />
-
-          <div className=" flex gap-4 mt-5">
+          {/* Terms */}
+          <div className="flex gap-2 text-sm mt-2">
             <input
               type="checkbox"
               required
-              aria-required="true"
-              className=" accent-(--accent-color) scale-150 cursor-pointer"
+              className="accent-[var(--accent-color)] scale-125 cursor-pointer"
             />
             <p>
               I agree to{" "}
               <span className="text-[var(--accent-color)]">
                 Terms of Service
               </span>{" "}
-              and
-              <span className="text-[var(--accent-color)]">
-                {" "}
-                Privacy Policies
-              </span>
+              and{" "}
+              <span className="text-[var(--accent-color)]">Privacy Policy</span>
             </p>
           </div>
 
+          {/* Submit */}
           <button
             type="submit"
-            className="py-3 text-xl font-semibold bg-[var(--accent-color)] w-full rounded-xl text-white mt-5"
+            className="py-3 text-lg font-semibold bg-[var(--accent-color)] w-full rounded-xl text-white"
           >
             Sign Up
           </button>
 
-          <div className="flex items-center justify-center gap-3 my-3 w-full">
+          {/* Divider */}
+          <div className="flex items-center justify-center gap-3 my-3">
             <img src={line13} alt="" />
-            <p className="mb-0 ">or</p>
+            <p className="text-gray-500 text-sm">or</p>
             <img src={line16} alt="" />
           </div>
 
-          {/* Google oauth comes here. */}
-          {/* <GOoogolee000></GOoogolee000> */}
-
-          <p className="place-self-center opacity-80">
+          {/* Login link */}
+          <p className="text-center text-sm text-gray-700">
             Already have an account?{" "}
-            <Link to="/login" className="text-[var(--accent-color)]">
+            <Link
+              to="/login"
+              className="text-[var(--accent-color)] font-medium"
+            >
               Sign in
             </Link>
           </p>
-        </div>
-      </form>
-      <div className=" w-6/12">
-        <AuthBg />
+        </form>
+      </div>
+
+      {/* Right side image (desktop only) */}
+      <div className="hidden lg:flex w-1/2">
+        <AuthBg className="w-full h-full object-cover" />
       </div>
     </div>
   );

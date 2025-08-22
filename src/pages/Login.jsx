@@ -8,16 +8,11 @@ import { toast } from "react-toastify";
 
 const Login = () => {
   const navigate = useNavigate();
-  const [logIn, setLogIn] = useState({
-    email: "",
-    password: "",
-  });
+  const [logIn, setLogIn] = useState({ email: "", password: "" });
   const myApi = useContext(ApiContext);
 
-  const changeLogInInput = (e) => {
-    e.preventDefault();
+  const changeLogInInput = (e) =>
     setLogIn({ ...logIn, [e.target.name]: e.target.value });
-  };
 
   const submitting = async (e) => {
     e.preventDefault();
@@ -26,91 +21,94 @@ const Login = () => {
       toast.success("Welcome back 👋 Glad to see you again!");
       navigate("/");
     } catch (error) {
-      toast.error(error.message, {
-        position: "top-center",
-      });
+      toast.error(error.message, { position: "top-center" });
     }
   };
+
   return (
-    <div className="flex flex-row w-full justify-between items-center">
-      <form
-        className=" w-6/12 px-20 py-15 flex flex-col items-start gap-8"
-        onSubmit={submitting}
-      >
-        <div className="intro flex flex-col gap-2  items-start">
-          <h1 className="font-semibold text-2xl/tight text-start pe-8">
-            Welcome Back to BetaHouse!{" "}
-          </h1>
-          <p className="font-normal text-[16px]">
-            Lets get started by filling out the information below
-          </p>
-        </div>
+    <div className="flex min-h-screen w-full">
+      {/* Left side form (always visible) */}
+      <div className="flex w-full lg:w-1/2 items-center justify-center p-6 lg:p-20">
+        <form
+          onSubmit={submitting}
+          className="bg-white/90 backdrop-blur-md shadow-lg rounded-2xl w-full max-w-md p-8 flex flex-col gap-6"
+        >
+          <div className="flex flex-col gap-2">
+            <h1 className="font-semibold text-2xl text-gray-900">
+              Welcome Back to BetaHouse!
+            </h1>
+            <p className="text-gray-600 text-sm">
+              Let’s get started by filling out the information below
+            </p>
+          </div>
 
-        <div className="email flex flex-col items-start gap-1 w-full">
-          <label className="text-[16px] font-normal">Email</label>
-          <input
-            name="email"
-            type="email"
-            className="px-4 py-3 rounded-xl border-2 border-gray-300 focus:border-gray-700 w-full"
-            placeholder="Enter your Email"
-            value={logIn.email}
-            onChange={changeLogInInput}
-          />
-        </div>
+          {/* Email */}
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium lg:text-start">Email</label>
+            <input
+              name="email"
+              type="email"
+              value={logIn.email}
+              onChange={changeLogInInput}
+              placeholder="Enter your Email"
+              className="px-4 py-3 rounded-xl border-2 border-gray-300 focus:border-gray-700 w-full"
+            />
+          </div>
 
-        <div className="password flex flex-col items-start gap-1 w-full">
-          <label className="text-[16px] font-normal">Password</label>
-          <input
-            name="password"
-            type="password"
-            placeholder="Enter your password"
-            className="px-4 py-3 rounded-xl border-2 border-gray-300 focus:border-gray-700 w-full"
-            value={logIn.password}
-            onChange={changeLogInInput}
-          />
-        </div>
+          {/* Password */}
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium lg:text-start">
+              Password
+            </label>
+            <input
+              name="password"
+              type="password"
+              value={logIn.password}
+              onChange={changeLogInInput}
+              placeholder="Enter your password"
+              className="px-4 py-3 rounded-xl border-2 border-gray-300 focus:border-gray-700 w-full"
+            />
+          </div>
 
-        <div className="continue flex flex-col items-start gap-1 w-full">
-          <div className="flex justify-between items-center w-full">
-            <div className=" flex gap-4">
-              <input
-                required
-                aria-required="true"
-                type="checkbox"
-                className=" accent-(--accent-color) scale-150 cursor-pointer"
-              />
-              <p>Remember Me</p>
-            </div>
-
+          {/* Remember + Forgot */}
+          <div className="flex justify-between items-center text-sm">
+            <label className="flex items-center gap-2">
+              <input type="checkbox" className="accent-[var(--accent-color)]" />
+              Remember Me
+            </label>
             <p className="text-red-500 cursor-pointer">Forgot Password</p>
           </div>
 
+          {/* Sign in button */}
           <button
             type="submit"
-            className="py-3 text-xl font-semibold bg-[var(--accent-color)] w-full rounded-xl text-white mt-5"
+            className="py-3 text-lg font-semibold bg-[var(--accent-color)] rounded-xl text-white w-full"
           >
             Sign In
           </button>
 
-          <div className="flex items-center justify-center gap-3 my-3 w-full">
+          {/* Divider */}
+          <div className="flex items-center justify-center gap-3">
             <img src={line13} alt="" />
-            <p className="mb-0 ">or</p>
+            <p className="text-gray-500">or</p>
             <img src={line16} alt="" />
           </div>
 
-          {/* Google oauth comes here. */}
-          {/* <GOoogolee000></GOoogolee000> */}
-
-          <p className="place-self-center opacity-80">
-            Already have an account?{" "}
-            <Link to="/sign-up" className="text-[var(--accent-color)]">
+          <p className="text-center text-sm text-gray-700">
+            Don’t have an account?{" "}
+            <Link
+              to="/sign-up"
+              className="text-[var(--accent-color)] font-medium"
+            >
               Sign up
             </Link>
           </p>
-        </div>
-      </form>
-      <div className=" w-6/12">
-        <AuthBg />
+        </form>
+      </div>
+
+      {/* Right side image (desktop only) */}
+      <div className="hidden lg:flex w-1/2">
+        <AuthBg className="w-full h-full object-cover" />
       </div>
     </div>
   );
