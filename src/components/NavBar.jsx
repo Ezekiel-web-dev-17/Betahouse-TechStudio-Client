@@ -10,7 +10,16 @@ const NavBar = () => {
       </Link>
 
       <ul className="flex gap-x-10 text-[19px] font-medium text-white text-nowrap">
-        <Link to="/">Home</Link>
+        <Link
+          to="/"
+          className={`${
+            location.pathname === "/"
+              ? "underline decoration-1 underline-offset-10"
+              : ""
+          }`}
+        >
+          Home
+        </Link>
         <Link
           to="/properties"
           className={`${

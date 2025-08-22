@@ -5,7 +5,7 @@ import line16 from "../../utils/Line 16.svg";
 import { Link, useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const naigate = useNavigate();
+  const navigate = useNavigate();
   return (
     <div className="flex flex-row w-full justify-between items-center">
       <form className=" w-6/12 px-20 py-15 flex flex-col items-start gap-8">
@@ -40,6 +40,8 @@ const Login = () => {
           <div className="flex justify-between items-center w-full">
             <div className=" flex gap-4">
               <input
+                required
+                aria-required="true"
                 type="checkbox"
                 className=" accent-(--accent-color) scale-150 cursor-pointer"
               />

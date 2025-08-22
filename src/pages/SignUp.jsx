@@ -66,6 +66,8 @@ const SignUp = () => {
           <div className=" flex gap-4 mt-5">
             <input
               type="checkbox"
+              required
+              aria-required="true"
               className=" accent-(--accent-color) scale-150 cursor-pointer"
             />
             <p>
