@@ -17,7 +17,10 @@ const Login = () => {
   const submitting = async (e) => {
     e.preventDefault();
     try {
-      await myApi.post("/auth/sign-in", logIn);
+      const res = await myApi.post("/auth/sign-in", logIn);
+      console.log(res.data.user);
+      const response = JSON.stringify(res.data.user);
+      localStorage.setItem("user", response);
       toast.success("Welcome back 👋 Glad to see you again!");
       navigate("/");
     } catch (error) {
@@ -94,7 +97,7 @@ const Login = () => {
             <img src={line16} alt="" />
           </div>
 
-          <p className="text-center text-sm text-gray-700">
+          <p className="text-center text-sm text-gray-700 cursor-pointer">
             Don’t have an account?{" "}
             <Link
               to="/sign-up"

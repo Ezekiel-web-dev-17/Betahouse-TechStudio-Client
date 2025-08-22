@@ -3,11 +3,16 @@ import logo from "../../utils/bhlogo.png";
 import { Link, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { CgClose } from "react-icons/cg";
+import { BsPerson } from "react-icons/bs";
+import { FaChevronDown } from "react-icons/fa";
 
 const NavBar = () => {
   const location = useLocation();
   const [openMenu, setOpenMenu] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
   const [menuBtn, setMenuBtn] = useState(true);
+  const user = localStorage.getItem("user");
+  const userParsed = JSON.parse(user);
   return (
     <div className="">
       <nav className="hidden [@media(min-width:900px)]:flex w-full max-w-screen px-15 py-8 fixed top-0 items-center justify-between z-20">
@@ -48,22 +53,50 @@ const NavBar = () => {
         </ul>
 
         <div className="text-white  flex gap-5">
-          <Link to="/sign-up" className="me-6">
-            <button
-              className="rounded-xl px-[20%] py-[9%] border-1 auth-btn cursor-pointer text-nowrap"
-              style={{ minWidth: "100%" }}
-            >
-              Sign up
-            </button>
-          </Link>
-          <Link to="/login">
-            <button
-              className="min-w-3/5 rounded-xl px-[20%] py-[15%] border-0 auth-btn text-logo cursor-pointer"
-              style={{ minWidth: "100%" }}
-            >
-              Login
-            </button>
-          </Link>
+          {user && (
+            <div className="flex gap-x-3 items-center max-h-5 relative">
+              <BsPerson />
+              <h4>
+                {`${userParsed.firstName} `} {`${userParsed.lastName}`}
+              </h4>
+              <FaChevronDown
+                onClick={() =>
+                  loggedIn ? setLoggedIn(false) : setLoggedIn(true)
+                }
+              />
+              {loggedIn && (
+                <button
+                  onClick={() => {
+                    setLoggedIn(false);
+                    localStorage.clear();
+                  }}
+                  className="rounded-xl px-2 py-1 auth-btn cursor-pointer text-nowrap bg-red-500 absolute top-7 left-7"
+                >
+                  LogOut
+                </button>
+              )}
+            </div>
+          )}
+          {!user && (
+            <div className=" flex gap-5">
+              <Link to="/sign-up" className="me-6">
+                <button
+                  className="rounded-xl px-[20%] py-[9%] border-1 auth-btn cursor-pointer text-nowrap"
+                  style={{ minWidth: "100%" }}
+                >
+                  Sign up
+                </button>
+              </Link>
+              <Link to="/login">
+                <button
+                  className="min-w-3/5 rounded-xl px-[20%] py-[15%] border-0 auth-btn text-logo cursor-pointer"
+                  style={{ minWidth: "100%" }}
+                >
+                  Login
+                </button>
+              </Link>
+            </div>
+          )}
         </div>
       </nav>
 
@@ -81,16 +114,16 @@ const NavBar = () => {
           />
         )}
         {openMenu && (
-          <div
-            className="relative"
-            onClick={() => {
-              setOpenMenu(false);
-              setMenuBtn(true);
-            }}
-          >
+          <div className="relative">
             <nav className="flex flex-col absolute -top-7 backdrop-blur-md bg-[#3d9970]/90  -right-1/12 min-w-50 min-h-screen  gap-4">
               <CgClose className="text-white place-self-end mt-5 me-4" />
-              <ul className="flex flex-col gap-y-6 text-[.9rem] font-medium text-white text-nowrap min-w-1/2">
+              <ul
+                className="flex flex-col gap-y-6 text-[.9rem] font-medium text-white text-nowrap min-w-1/2"
+                onClick={() => {
+                  setOpenMenu(false);
+                  setMenuBtn(true);
+                }}
+              >
                 <Link
                   to="/"
                   className={`${
@@ -132,22 +165,52 @@ const NavBar = () => {
               </ul>
 
               <div className="text-white  flex gap-5 place-self-center">
-                <Link to="/sign-up" className="me-6">
-                  <button
-                    className="rounded-xl px-[20%] py-[9%] border-1 auth-btn cursor-pointer text-nowrap"
-                    style={{ minWidth: "100%" }}
-                  >
-                    Sign up
-                  </button>
-                </Link>
-                <Link to="/login">
-                  <button
-                    className="min-w-3/5 rounded-xl px-[20%] py-[15%] border-0 auth-btn text-logo cursor-pointer"
-                    style={{ minWidth: "100%" }}
-                  >
-                    Login
-                  </button>
-                </Link>
+                {user && (
+                  <div className="flex gap-x-3 items-center max-h-5 relative">
+                    <BsPerson />
+                    <h4>
+                      {`${userParsed.firstName} `} {`${userParsed.lastName}`}
+                    </h4>
+                    <FaChevronDown
+                      onClick={() =>
+                        loggedIn ? setLoggedIn(false) : setLoggedIn(true)
+                      }
+                    />
+                    {loggedIn && (
+                      <button
+                        onClick={() => {
+                          setOpenMenu(false);
+                          setMenuBtn(true);
+                          setLoggedIn(false);
+                          localStorage.clear();
+                        }}
+                        className="rounded-xl px-2 py-1 auth-btn cursor-pointer text-nowrap bg-red-500 absolute top-7 left-7"
+                      >
+                        LogOut
+                      </button>
+                    )}
+                  </div>
+                )}
+                {!user && (
+                  <div>
+                    <Link to="/sign-up" className="me-6">
+                      <button
+                        className="rounded-xl px-[20%] py-[9%] border-1 auth-btn cursor-pointer text-nowrap"
+                        style={{ minWidth: "100%" }}
+                      >
+                        Sign up
+                      </button>
+                    </Link>
+                    <Link to="/login">
+                      <button
+                        className="min-w-3/5 rounded-xl px-[20%] py-[15%] border-0 auth-btn text-logo cursor-pointer"
+                        style={{ minWidth: "100%" }}
+                      >
+                        Login
+                      </button>
+                    </Link>
+                  </div>
+                )}
               </div>
             </nav>
           </div>
