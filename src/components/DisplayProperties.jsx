@@ -36,6 +36,7 @@ const DisplayProperties = () => {
       setProperties(res.data.properties);
       setFilterMode(false);
     } catch (err) {
+      setLoading(false);
       console.error("Error fetching properties:", err);
       setError(err?.response?.data?.message || "Error getting properties.");
       toast.error("Failed to fetch properties.");
