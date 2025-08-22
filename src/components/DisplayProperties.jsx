@@ -38,7 +38,7 @@ const DisplayProperties = () => {
     } catch (err) {
       setLoading(false);
       console.error("Error fetching properties:", err);
-      setError(err?.response?.data?.message || "Error getting properties.");
+      setError(`${err?.response?.data?.message}. Try refreshing the page.`);
       toast.error("Failed to fetch properties.");
     }
   };
