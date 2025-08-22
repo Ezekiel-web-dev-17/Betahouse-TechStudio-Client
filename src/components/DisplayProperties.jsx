@@ -149,7 +149,11 @@ const DisplayProperties = () => {
                   />
                 </div>
               </div>
-              <img className="rounded-t-xl" src={property.image} alt="" />
+              <img
+                className="rounded-t-xl"
+                src={property.image.replace("%20", " ")}
+                alt=""
+              />
             </div>
             <div className="text-start p-4 flex flex-col gap-4">
               <h4 className="opacity-70 font-semibold text-[20px]">
