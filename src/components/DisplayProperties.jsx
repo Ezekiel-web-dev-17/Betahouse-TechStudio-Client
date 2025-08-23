@@ -20,7 +20,7 @@ const DisplayProperties = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [message, setMessage] = useState(
-    "Waking up the server this may take a few seconds..."
+    "Waking up the server, this may take a few seconds..."
   );
   const [active, setActive] = useState(1);
   const myApi = useContext(ApiContext);
@@ -32,8 +32,21 @@ const DisplayProperties = () => {
         setMessage("✅ Server is awake! 🚀 Fetching properties...");
         getProperties();
       } else {
-        setTimeout(checkServer, 3000);
+        setTimeout(checkServer(), 3000);
       }
+    } catch (err) {
+      // server still cold
+      console.log(err);
+      setTimeout(checkServer(), 3000);
+    }
+  };
+
+  const sortBy = async (by, order) => {
+    try {
+      // https://betahouse-techstudio-server-1.onrender.com/api/v1/property/sort-by-title?order=asc
+      const res = await myApi.get(`/property/sort-by-${by}?order=${order}`);
+      setMessage("✅ Server is awake! 🚀 Fetching properties...");
+      setProperties(res.data.properties);
     } catch (err) {
       // server still cold
       console.log(err);
@@ -79,7 +92,13 @@ const DisplayProperties = () => {
               <p className="text-nowrap">More Filter</p>
             </div>
             <p className="text-nowrap">
-              Showing {active === 1 ? "1 - 9 of 15" : "10 - 15"} of 15 results
+              Showing{" "}
+              {properties.length > 9
+                ? "Properties in sorted order"
+                : active === 1
+                ? "1 - 9"
+                : "10 - 15"}{" "}
+              of 15 results
             </p>
           </div>
 
@@ -91,6 +110,16 @@ const DisplayProperties = () => {
               id=""
               className="text-[16px] lg:text-xl font-semibold px-4 appearance-none bg-white py-1 lg:py-2 ps-1 lg:pr-8 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 max-w-8/12
     "
+              onChange={(e) => {
+                let value = e.target.value;
+                value === "Alphabetical"
+                  ? sortBy("title", "asc")
+                  : value === "Price: Low to High"
+                  ? sortBy("price", "asc")
+                  : value === "Price: High to Low"
+                  ? sortBy("price", "des")
+                  : getProperties();
+              }}
             >
               <option value="Default">Default</option>
               <option value="Alphabetical">Alphabetical</option>
@@ -215,7 +244,7 @@ const DisplayProperties = () => {
           </div>
         ))}
       </div>
-      {!filterMode && (
+      {!filterMode && properties.length <= 9 && (
         <div className="paginator cursor-pointer font-semibold text-2xl flex gap-8 items-center place-content-center mt-10">
           <img
             src={queryArrow}
