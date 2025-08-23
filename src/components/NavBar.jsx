@@ -11,8 +11,9 @@ const NavBar = () => {
   const [openMenu, setOpenMenu] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
   const [menuBtn, setMenuBtn] = useState(true);
-  const user = localStorage.getItem("user");
-  const userParsed = JSON.parse(user);
+  const firstname = localStorage.getItem("firstName");
+  const lastname = localStorage.getItem("lastName");
+  const user = { firstname, lastname };
   return (
     <div className="">
       <nav className="hidden [@media(min-width:900px)]:flex w-full max-w-screen px-15 py-8 fixed top-0 items-center justify-between z-20">
@@ -53,11 +54,11 @@ const NavBar = () => {
         </ul>
 
         <div className="text-white  flex gap-5">
-          {user && (
+          {firstname && lastname && (
             <div className="flex gap-x-3 items-center max-h-5 relative">
               <BsPerson />
               <h4>
-                {`${userParsed.firstName} `} {`${userParsed.lastName}`}
+                {`${user.firstname} `} {`${user.lastname}`}
               </h4>
               <FaChevronDown
                 onClick={() =>
@@ -77,7 +78,7 @@ const NavBar = () => {
               )}
             </div>
           )}
-          {!user && (
+          {!firstname && !lastname && (
             <div className=" flex gap-5">
               <Link to="/sign-up" className="me-6">
                 <button
@@ -165,11 +166,11 @@ const NavBar = () => {
               </ul>
 
               <div className="text-white  flex gap-5 place-self-center">
-                {user && (
+                {firstname && lastname && (
                   <div className="flex gap-x-3 items-center max-h-5 relative">
                     <BsPerson />
                     <h4>
-                      {`${userParsed.firstName} `} {`${userParsed.lastName}`}
+                      {`${user.firstname} `} {`${user.lastname}`}
                     </h4>
                     <FaChevronDown
                       onClick={() =>
@@ -191,7 +192,7 @@ const NavBar = () => {
                     )}
                   </div>
                 )}
-                {!user && (
+                {!firstname && !lastname && (
                   <div>
                     <Link to="/sign-up" className="me-6">
                       <button

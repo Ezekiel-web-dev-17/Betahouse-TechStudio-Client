@@ -6,74 +6,85 @@ import { Link, useNavigate } from "react-router-dom";
 import { ApiContext } from "../ApiContext";
 import { toast } from "react-toastify";
 import { GoogleLogin } from "@react-oauth/google";
-import { jwtDecode } from "jwt-decode";
 
 const Login = () => {
   const navigate = useNavigate();
-  const [logIn, setLogIn] = useState({ email: "", password: "" });
   const myApi = useContext(ApiContext);
+  const [logIn, setLogIn] = useState({ email: "", password: "" });
 
   const changeLogInInput = (e) =>
     setLogIn({ ...logIn, [e.target.name]: e.target.value });
 
-  const submitting = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const res = await myApi.post("/auth/sign-in", logIn);
-      console.log(res.data.user);
-      const response = JSON.stringify(res.data.user);
-      localStorage.setItem("user", response);
-      toast.success("Welcome back 👋 Glad to see you again!");
+      const user = res.data.user;
+      localStorage.setItem("firstName", user.firstName);
+      localStorage.setItem("lastName", user.lastName);
+      toast.success(`Welcome back, ${user.firstName}!`);
       navigate("/");
     } catch (error) {
-      toast.error(error.message, { position: "top-center" });
+      toast.error(error.response?.data?.message || "Login failed");
+    }
+  };
+
+  const handleGoogleLogin = async (credentialResponse) => {
+    try {
+      const res = await myApi.post("/auth/google", {
+        token: credentialResponse.credential,
+      });
+      const user = res.data.user;
+      localStorage.setItem("firstName", user.firstName);
+      localStorage.setItem("lastName", user.lastName);
+      toast.success(`Welcome back, ${user.firstName}!`);
+      navigate("/");
+    } catch (error) {
+      if (error.response?.status === 404) {
+        toast.error("User not found. Please sign up first.");
+      } else {
+        toast.error(error.response?.data?.message || "Google login failed");
+      }
+      console.error("Google login error:", error);
     }
   };
 
   return (
     <div className="flex min-h-screen w-full">
-      {/* Left side form (always visible) */}
+      {/* Left: Form */}
       <div className="flex w-full lg:w-1/2 items-center justify-center p-6 lg:p-20">
         <form
-          onSubmit={submitting}
+          onSubmit={handleSubmit}
           className="bg-white/90 backdrop-blur-md shadow-lg rounded-2xl w-full max-w-md p-8 flex flex-col gap-6"
         >
-          <div className="flex flex-col gap-2">
-            <h1 className="font-semibold text-2xl text-gray-900">
-              Welcome Back to BetaHouse!
-            </h1>
-            <p className="text-gray-600 text-sm">
-              Let’s get started by filling out the information below
-            </p>
-          </div>
+          <h1 className="font-semibold text-2xl text-gray-900">
+            Welcome Back to BetaHouse!
+          </h1>
+          <p className="text-gray-600 text-sm">
+            Sign in to continue exploring properties.
+          </p>
 
           {/* Email */}
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium lg:text-start">Email</label>
-            <input
-              name="email"
-              type="email"
-              value={logIn.email}
-              onChange={changeLogInInput}
-              placeholder="Enter your Email"
-              className="px-4 py-3 rounded-xl border-2 border-gray-300 focus:border-gray-700 w-full"
-            />
-          </div>
+          <input
+            name="email"
+            type="email"
+            placeholder="Email"
+            value={logIn.email}
+            onChange={changeLogInInput}
+            className="px-4 py-3 border rounded-xl w-full"
+            required
+          />
 
           {/* Password */}
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium lg:text-start">
-              Password
-            </label>
-            <input
-              name="password"
-              type="password"
-              value={logIn.password}
-              onChange={changeLogInInput}
-              placeholder="Enter your password"
-              className="px-4 py-3 rounded-xl border-2 border-gray-300 focus:border-gray-700 w-full"
-            />
-          </div>
+          <input
+            name="password"
+            type="password"
+            placeholder="Password"
+            value={logIn.password}
+            onChange={changeLogInInput}
+            className="px-4 py-3 border rounded-xl w-full"
+            required
+          />
 
           {/* Remember + Forgot */}
           <div className="flex justify-between items-center text-sm">
@@ -81,7 +92,7 @@ const Login = () => {
               <input type="checkbox" className="accent-[var(--accent-color)]" />
               Remember Me
             </label>
-            <p className="text-red-500 cursor-pointer">Forgot Password</p>
+            <p className="text-red-500 cursor-pointer">Forgot Password?</p>
           </div>
 
           {/* Sign in button */}
@@ -93,48 +104,23 @@ const Login = () => {
           </button>
 
           {/* Divider */}
-          <div className="flex items-center justify-center gap-3">
+          <div className="flex items-center justify-center gap-3 my-3">
             <img src={line13} alt="" />
-            <p className="text-gray-500">or</p>
+            <span className="text-gray-500 text-sm">or</span>
             <img src={line16} alt="" />
           </div>
 
-          <GoogleLogin
-            text="signin_with"
-            onSuccess={async (credentialResponse) => {
-              const userInfo = jwtDecode(credentialResponse.credential);
-              const data = {
-                email: userInfo.email,
-                password: userInfo.kid,
-              };
-              console.log(userInfo);
-              try {
-                const res = await myApi.post("/auth/sign-in", data);
+          {/* Google Login */}
+          <div className="w-full flex justify-center">
+            <GoogleLogin
+              onSuccess={handleGoogleLogin}
+              onError={() => toast.error("Google login failed")}
+              useOneTap
+            />
+          </div>
 
-                const { name } = res.data.data.user;
-                console.log(name);
-                localStorage.clear;
-                localStorage.setItem("user", name);
-                localStorage.setItem("token", res.data.data.token);
-                navigate("/");
-              } catch (error) {
-                if (error?.response?.status === 404) {
-                  toast.error("User not found. Please sign up first.");
-                  return;
-                }
-                console.error("Error during Google login:", error);
-                toast.error(
-                  error?.response?.data?.error ||
-                    "Login failed. Please try again."
-                );
-                return;
-              }
-            }}
-            onError={() => alert("Login Failed")}
-            auto_select={true}
-          />
-
-          <p className="text-center text-sm text-gray-700 cursor-pointer">
+          {/* Signup link */}
+          <p className="text-center text-sm text-gray-700">
             Don’t have an account?{" "}
             <Link
               to="/sign-up"
@@ -146,7 +132,7 @@ const Login = () => {
         </form>
       </div>
 
-      {/* Right side image (desktop only) */}
+      {/* Right: Background image */}
       <div className="hidden lg:flex w-1/2">
         <AuthBg className="w-full h-full object-cover" />
       </div>
