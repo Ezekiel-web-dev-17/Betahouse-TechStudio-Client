@@ -1,5 +1,5 @@
 import React from "react";
-import logo from "../utils/bhlogo.png";
+import logo from "../assets/bhlogo.png";
 import { GrMail } from "react-icons/gr";
 import { BsTelephoneFill, BsFillGeoAltFill } from "react-icons/bs";
 import { Link } from "react-router-dom";

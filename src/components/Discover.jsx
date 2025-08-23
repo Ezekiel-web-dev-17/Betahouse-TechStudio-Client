@@ -1,10 +1,10 @@
 import { BsFillGeoAltFill } from "react-icons/bs";
-import discover1 from "../utils/Discover1.svg";
-import discover2 from "../utils/Discover2.svg";
-import discover3 from "../utils/Discover3.svg";
-import discover4 from "../utils/Discover4.svg";
-import backArr from "../utils/backArr.svg";
-import nextArr from "../utils/nextArr.svg";
+import discover1 from "../assets/Discover1.svg";
+import discover2 from "../assets/Discover2.svg";
+import discover3 from "../assets/Discover3.svg";
+import discover4 from "../assets/Discover4.svg";
+import backArr from "../assets/backArr.svg";
+import nextArr from "../assets/nextArr.svg";
 import { useRef, useState } from "react";
 
 const discoverApi = [

@@ -1,18 +1,17 @@
 import React, { useContext, useEffect, useState } from "react";
-import filterImg from "../utils/Icon (1).svg";
+import filterImg from "../assets/Icon (1).svg";
 import { IoIosArrowDown } from "react-icons/io";
 import { BsFillGeoAltFill, BsShare, BsHeart } from "react-icons/bs";
-import imglink1 from "../utils/Vector (9).svg";
-import imglink2 from "../utils/Vector (8).svg";
-import imglink3 from "../utils/Vector (7).svg";
-import arrowToFro from "../utils/Vector (4).svg";
-import bed from "../utils/Icon.svg";
-import bathroom from "../utils/Vector (6).svg";
+import imglink1 from "../assets/Vector (9).svg";
+import imglink2 from "../assets/Vector (8).svg";
+import imglink3 from "../assets/Vector (7).svg";
+import arrowToFro from "../assets/Vector (4).svg";
+import bed from "../assets/Icon.svg";
+import bathroom from "../assets/Vector (6).svg";
 import { toast } from "react-toastify";
 import queryArrow from "../assets/Vector (10).svg";
 import { ApiContext, PropertiesContext } from "../ApiContext";
 import LoaderComp from "./LoaderComp";
-
 const DisplayProperties = () => {
   const { propertiesFromApi, setPropertiesFromApi } =
     useContext(PropertiesContext);
@@ -198,7 +197,7 @@ const DisplayProperties = () => {
               </div>
               <img
                 className="rounded-t-xl"
-                src={property.image.replace("%20", " ")}
+                src={`${property.image.replace("utils", "../src/assets")}`}
                 alt=""
               />
             </div>

@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import AuthBg from "../components/AuthBg";
-import line13 from "../utils/Line 13.svg";
-import line16 from "../utils/Line 16.svg";
+import line13 from "../assets/Line 13.svg";
+import line16 from "../assets/Line 16.svg";
 import { Link, useNavigate } from "react-router-dom";
 import { ApiContext } from "../ApiContext";
 import { toast } from "react-toastify";
@@ -105,19 +105,16 @@ const Login = () => {
               const userInfo = jwtDecode(credentialResponse.credential);
               const data = {
                 email: userInfo.email,
-                email_verified: userInfo.email_verified,
-                // Indicating this is a Google sign-in
+                password: userInfo.kid,
               };
               console.log(userInfo);
               try {
                 const res = await myApi.post("/auth/sign-in", data);
 
-                const { firstname, lastname, email } = res.data.data.user;
-                console.log(firstname);
+                const { name } = res.data.data.user;
+                console.log(name);
                 localStorage.clear;
-                localStorage.setItem("firstName", firstname);
-                localStorage.setItem("lastName", lastname);
-                localStorage.setItem("userEmail", email);
+                localStorage.setItem("user", name);
                 localStorage.setItem("token", res.data.data.token);
                 navigate("/");
               } catch (error) {
