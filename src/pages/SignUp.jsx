@@ -164,7 +164,7 @@ const SignUp = () => {
             <img src={line16} alt="" />
           </div>
 
-          <div className="w-full">
+          <div className="w-full place-content-center">
             <GoogleLogin
               text="signup_with"
               onSuccess={async (credentialResponse) => {
