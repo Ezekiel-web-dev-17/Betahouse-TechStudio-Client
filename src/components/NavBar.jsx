@@ -107,7 +107,7 @@ const NavBar = () => {
         </Link>
         {menuBtn && (
           <IoIosMenu
-            className="text-white me-5"
+            className="text-white me-5 text-2xl"
             onClick={() => {
               setOpenMenu(true);
               setMenuBtn(false);
@@ -117,7 +117,13 @@ const NavBar = () => {
         {openMenu && (
           <div className="relative">
             <nav className="flex flex-col absolute -top-7 backdrop-blur-md bg-[#3d9970]/90  -right-1/12 min-w-50 min-h-screen  gap-4">
-              <CgClose className="text-white place-self-end mt-5 me-4" />
+              <CgClose
+                onClick={() => {
+                  setOpenMenu(false);
+                  setMenuBtn(true);
+                }}
+                className="text-white place-self-end mt-5 me-4 text-2xl"
+              />
               <ul
                 className="flex flex-col gap-y-6 text-[.9rem] font-medium text-white text-nowrap min-w-1/2"
                 onClick={() => {

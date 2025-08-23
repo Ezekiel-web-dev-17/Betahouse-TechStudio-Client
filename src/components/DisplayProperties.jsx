@@ -19,7 +19,9 @@ const DisplayProperties = () => {
   const [filterMode, setFilterMode] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [message, setMessage] = useState("Waking up the server...");
+  const [message, setMessage] = useState(
+    "Waking up the server this may take a few seconds..."
+  );
   const [active, setActive] = useState(1);
   const myApi = useContext(ApiContext);
 
@@ -197,7 +199,7 @@ const DisplayProperties = () => {
               </div>
               <img
                 className="rounded-t-xl"
-                src={`${property.image.replace("utils", "../src/assets")}`}
+                src={`${property.image.replace("../utils", "/utils")}`}
                 alt=""
               />
             </div>
