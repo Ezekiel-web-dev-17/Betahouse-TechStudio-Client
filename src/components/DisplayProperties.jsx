@@ -71,31 +71,6 @@ const DisplayProperties = () => {
     <section className="px-10 lg:px-34 pt-15 relative">
       {loading && LoaderComp}
 
-      {filterMode && (
-        <div
-          className="w-30 flex gap-10 items-center cursor-pointer"
-          onClick={() => {
-            setPropertiesFromApi([]);
-
-            getProperties();
-          }}
-        >
-          <img
-            src={queryArrow}
-            className="rotate-180 absolute"
-            alt="Back button"
-          />{" "}
-          <h4 className="text-2xl ps-5 font-bold font-mono opacity-75">Back</h4>
-          <p className="text-nowrap text-xl font-medium">
-            Showing{" "}
-            {propertiesFromApi.length >= 1
-              ? `${propertiesFromApi.length} `
-              : " "}
-            results
-          </p>
-        </div>
-      )}
-
       {!filterMode && (
         <div className="flex flex-col md:flex-row items-center justify-between gap-3 text-[16px] sm:text-xl font-medium">
           <div className=" flex flex-col md:flex-row gap-x-10">
@@ -240,53 +215,55 @@ const DisplayProperties = () => {
           </div>
         ))}
       </div>
-      <div className="paginator cursor-pointer font-semibold text-2xl flex gap-8 items-center place-content-center mt-10">
-        <img
-          src={queryArrow}
-          className="opacity-50 active:opacity-100 rotate-180"
-          alt="srcoll back arrow"
-          onClick={() => setActive((prevActive) => prevActive - 1)}
-        />
-        <div
-          onClick={(e) => {
-            e.preventDefault();
-            if (active !== 1) {
-              setActive(1);
-            }
-          }}
-          className={`opacity-60 ${
-            active === 1
-              ? "rounded px-2 py-1 text-white bg-[var(--accent-color)]"
-              : ""
-          } w-8`}
-        >
-          1
-        </div>
-        <div
-          onClick={(e) => {
-            e.preventDefault();
-            if (active !== 2) {
-              setActive(2);
-            }
-          }}
-          className={`opacity-60 ${
-            active === 2
-              ? "rounded-xl px-2 py-1 text-white bg-[var(--accent-color)]"
-              : ""
-          } w-8`}
-        >
-          2
-        </div>
+      {!filterMode && (
+        <div className="paginator cursor-pointer font-semibold text-2xl flex gap-8 items-center place-content-center mt-10">
+          <img
+            src={queryArrow}
+            className="opacity-50 active:opacity-100 rotate-180"
+            alt="srcoll back arrow"
+            onClick={() => setActive((prevActive) => prevActive - 1)}
+          />
+          <div
+            onClick={(e) => {
+              e.preventDefault();
+              if (active !== 1) {
+                setActive(1);
+              }
+            }}
+            className={`opacity-60 ${
+              active === 1
+                ? "rounded px-2 py-1 text-white bg-[var(--accent-color)]"
+                : ""
+            } w-8`}
+          >
+            1
+          </div>
+          <div
+            onClick={(e) => {
+              e.preventDefault();
+              if (active !== 2) {
+                setActive(2);
+              }
+            }}
+            className={`opacity-60 ${
+              active === 2
+                ? "rounded-xl px-2 py-1 text-white bg-[var(--accent-color)]"
+                : ""
+            } w-8`}
+          >
+            2
+          </div>
 
-        <img
-          src={queryArrow}
-          alt="scroll to next arrow"
-          className="opacity-50 active:opacity-100"
-          onClick={() => {
-            setActive((prevActive) => prevActive + 1);
-          }}
-        />
-      </div>
+          <img
+            src={queryArrow}
+            alt="scroll to next arrow"
+            className="opacity-50 active:opacity-100"
+            onClick={() => {
+              setActive((prevActive) => prevActive + 1);
+            }}
+          />
+        </div>
+      )}
     </section>
   );
 };
