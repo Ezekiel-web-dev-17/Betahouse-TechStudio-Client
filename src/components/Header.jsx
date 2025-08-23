@@ -57,7 +57,7 @@ const Header = () => {
         <form
           method="POST"
           onSubmit={filterSubmit}
-          className=" bg-amber-50 w-1/4 min-w-1/2 flex gap-x-6 flex-col lg:flex-row lg:w-3/4 place-self-center rounded-xl lg:rounded-2xl find z-10 relative after:rounded-xl after:w-[120%] after:-left-5 md:after:-left-9 lg:after:-left-[2.5%] lg:after:w-[105%] after:h-[120%] after:-top-6  lg:after:-top-1/4 lg:after:h-[150%]"
+          className=" bg-white w-1/4 min-w-1/2 flex gap-x-6 flex-col lg:flex-row lg:w-3/4 place-self-center rounded-xl lg:rounded-2xl find z-10 relative after:rounded-xl after:w-[120%] after:-left-5 md:after:-left-9 lg:after:-left-[2.5%] lg:after:w-[105%] after:h-[120%] after:-top-6  lg:after:-top-1/4 lg:after:h-[150%]"
         >
           <div className="filter items-center text-black flex flex-col lg:flex-row justify-between lg:ps-5 py-3 w-full font-semibold">
             <div className="by-location lg:w-1/4">

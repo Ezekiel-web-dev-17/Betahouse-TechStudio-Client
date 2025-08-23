@@ -108,6 +108,7 @@ const Login = () => {
                 email_verified: userInfo.email_verified,
                 // Indicating this is a Google sign-in
               };
+              console.log(userInfo);
               try {
                 const res = await myApi.post("/auth/sign-in", data);
 

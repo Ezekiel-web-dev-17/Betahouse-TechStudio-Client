@@ -84,7 +84,7 @@ const Discover = () => {
         alt="Back Arrow"
         className={`bg-[#3d9970] ${
           activeLeft ? "opacity-100" : "opacity-70"
-        } outline-2 outline-zinc-500 rounded-3xl p-5 px-4 absolute top-1/2 z-10 -left-8 drop-shadow-xl/50 ${
+        } outline-2 outline-zinc-500 rounded-3xl p-5 px-4 hidden lg:block absolute top-1/2 z-10 -left-8 drop-shadow-xl/50 ${
           index > 0 ? "cursor-pointer" : "cursor-not-allowed"
         }`}
         onClick={handleSwipeLeft}
@@ -125,7 +125,7 @@ const Discover = () => {
         alt="Next Arrow"
         className={`${
           activeRight ? "opacity-100" : "opacity-70"
-        } bg-[#3d9970] rounded-4xl outline-2 outline-zinc-500 py-5 px-4 absolute top-1/2 z-10 -right-8 drop-shadow-xl/50 ${
+        } bg-[#3d9970] rounded-4xl outline-2 outline-zinc-500 py-5 px-4 hidden lg:block absolute top-1/2 z-10 -right-8 drop-shadow-xl/50 ${
           maxIndex > index ? "cursor-pointer" : "cursor-not-allowed "
         }`}
         onClick={handleSwipeRight}
