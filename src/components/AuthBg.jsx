@@ -1,6 +1,6 @@
 import React from "react";
-import logo from "../../utils/bhlogo.png";
-import authBackground from "../../utils/signupbg.png";
+import logo from "../utils/bhlogo.png";
+import authBackground from "../utils/signupbg.png";
 import { Link } from "react-router-dom";
 
 const AuthBg = () => {

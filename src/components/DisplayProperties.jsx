@@ -1,13 +1,13 @@
 import React, { useContext, useEffect, useState } from "react";
-import filterImg from "../../utils/Icon (1).svg";
+import filterImg from "../utils/Icon (1).svg";
 import { IoIosArrowDown } from "react-icons/io";
 import { BsFillGeoAltFill, BsShare, BsHeart } from "react-icons/bs";
-import imglink1 from "../../utils/Vector (9).svg";
-import imglink2 from "../../utils/Vector (8).svg";
-import imglink3 from "../../utils/Vector (7).svg";
-import arrowToFro from "../../utils/Vector (4).svg";
-import bed from "../../utils/Icon.svg";
-import bathroom from "../../utils/Vector (6).svg";
+import imglink1 from "../utils/Vector (9).svg";
+import imglink2 from "../utils/Vector (8).svg";
+import imglink3 from "../utils/Vector (7).svg";
+import arrowToFro from "../utils/Vector (4).svg";
+import bed from "../utils/Icon.svg";
+import bathroom from "../utils/Vector (6).svg";
 import { toast } from "react-toastify";
 import queryArrow from "../assets/Vector (10).svg";
 import { ApiContext, PropertiesContext } from "../ApiContext";
@@ -18,23 +18,39 @@ const DisplayProperties = () => {
     useContext(PropertiesContext);
   const [properties, setProperties] = useState([]);
   const [filterMode, setFilterMode] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [message, setMessage] = useState("Waking up the server...");
   const [active, setActive] = useState(1);
   const myApi = useContext(ApiContext);
 
-  const filtered = JSON.parse(localStorage.getItem("filterBy"));
+  const checkServer = async () => {
+    try {
+      const res = await myApi.get("/property");
+      if (res.data) {
+        setMessage("✅ Server is awake! 🚀 Fetching properties...");
+        getProperties();
+      } else {
+        setTimeout(checkServer, 3000);
+      }
+    } catch (err) {
+      // server still cold
+      console.log(err);
+      setTimeout(checkServer, 3000);
+    }
+  };
+
   const getProperties = async () => {
     try {
       if (propertiesFromApi.length >= 1) {
         setProperties(propertiesFromApi);
         setFilterMode(true);
-        return;
+      } else {
+        const res = await myApi.get(`/property?page=${active}&lmt=9`);
+        setProperties(res.data.properties);
+        setFilterMode(false);
       }
-      const res = await myApi.get(`/property?page=${active}&lmt=9`);
-
-      setProperties(res.data.properties);
-      setFilterMode(false);
+      setLoading(false);
     } catch (err) {
       setLoading(false);
       console.error("Error fetching properties:", err);
@@ -45,9 +61,9 @@ const DisplayProperties = () => {
 
   useEffect(() => {
     setLoading(true);
-    getProperties();
-    setLoading(false);
-  }, [active, filtered, myApi, propertiesFromApi]);
+    checkServer();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active, myApi, propertiesFromApi]);
 
   console.log(properties);
   return (
@@ -78,6 +94,7 @@ const DisplayProperties = () => {
           </p>
         </div>
       )}
+
       {!filterMode && (
         <div className="flex flex-col md:flex-row items-center justify-between gap-3 text-[16px] sm:text-xl font-medium">
           <div className=" flex flex-col md:flex-row gap-x-10">
@@ -109,7 +126,37 @@ const DisplayProperties = () => {
           </div>
         </div>
       )}
+      {loading && (
+        <div className="text-center my-10">
+          <LoaderComp />
+          <p className="mt-4 font-semibold text-lg">{message}</p>
+        </div>
+      )}
       {error && toast.error(error)}
+
+      {filterMode && !loading && (
+        <div
+          className="w-30 flex gap-10 items-center cursor-pointer"
+          onClick={() => {
+            setPropertiesFromApi([]);
+            getProperties();
+          }}
+        >
+          <img
+            src={queryArrow}
+            className="rotate-180 absolute"
+            alt="Back button"
+          />
+          <h4 className="text-2xl ps-5 font-bold font-mono opacity-75">Back</h4>
+          <p className="text-nowrap text-xl font-medium">
+            Showing{" "}
+            {propertiesFromApi.length >= 1
+              ? `${propertiesFromApi.length} `
+              : " "}
+            results
+          </p>
+        </div>
+      )}
 
       <div className="properties grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
         {properties.map((property) => (

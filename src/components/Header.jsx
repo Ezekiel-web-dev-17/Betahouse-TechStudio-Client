@@ -1,5 +1,5 @@
-import minus from "../../utils/span.bedroom-count-btn.svg";
-import plus from "../../utils/span.bedroom-count-btn (1).svg";
+import minus from "../utils/span.bedroom-count-btn.svg";
+import plus from "../utils/span.bedroom-count-btn (1).svg";
 import { useContext, useState } from "react";
 import { toast } from "react-toastify";
 import { ApiContext, PropertiesContext } from "../ApiContext";

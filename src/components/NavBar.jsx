@@ -1,5 +1,5 @@
 import { IoIosMenu } from "react-icons/io";
-import logo from "../../utils/bhlogo.png";
+import logo from "../utils/bhlogo.png";
 import { Link, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { CgClose } from "react-icons/cg";

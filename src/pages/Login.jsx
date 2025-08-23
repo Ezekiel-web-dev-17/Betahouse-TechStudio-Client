@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import AuthBg from "../components/AuthBg";
-import line13 from "../../utils/Line 13.svg";
-import line16 from "../../utils/Line 16.svg";
+import line13 from "../utils/Line 13.svg";
+import line16 from "../utils/Line 16.svg";
 import { Link, useNavigate } from "react-router-dom";
 import { ApiContext } from "../ApiContext";
 import { toast } from "react-toastify";
