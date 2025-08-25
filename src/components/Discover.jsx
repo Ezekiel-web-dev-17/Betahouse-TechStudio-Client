@@ -24,7 +24,7 @@ const Discover = () => {
   const getDiscover = async () => {
     try {
       setLoading(true);
-      const discover = await myApi.get("/discover/");
+      const discover = await myApi.get("/popular/");
 
       setDiscoverApi(discover.data.properties);
       setLoading(false);
