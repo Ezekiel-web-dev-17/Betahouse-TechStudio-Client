@@ -6,8 +6,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { ApiContext } from "../ApiContext";
 import { toast } from "react-toastify";
 import { GoogleLogin } from "@react-oauth/google";
+import LoaderComp from "../components/LoaderComp";
 
 const SignUp = () => {
+  const [loading, setLoading] = useState(false);
   const [signUp, setSignUp] = useState({
     firstName: "",
     lastName: "",
@@ -25,26 +27,47 @@ const SignUp = () => {
   const submitting = async (e) => {
     e.preventDefault();
     try {
+      setLoading(true);
       if (signUp.confirmPass !== signUp.password) {
         throw new Error("Passwords do not match");
       }
+
+      console.log("res:", "sending request...");
       const res = await myApi.post("/auth/sign-up", signUp);
+      setLoading(false);
+      console.log("res:", res);
       const user = res.data.user;
       localStorage.setItem("firstName", user.firstName);
       localStorage.setItem("lastName", user.lastName);
       toast.success("Account created successfully!");
       navigate("/");
     } catch (err) {
-      toast.error(err.response?.data?.message || err.message);
+      setLoading(false);
+
+      if (err.message.includes("409")) {
+        toast.error("User already exists!");
+      } else if (err.message.includes("400")) {
+        toast.error("All fields are required.");
+      } else if (err.message.includes("429")) {
+        toast.error("Too many attempts.");
+      } else if (err.message.includes("500")) {
+        toast.error("There is an error on our part.");
+      } else {
+        toast.error(err.message || "Error signing user up.");
+      }
     }
   };
 
   const handleGoogleAuth = async (credentialResponse) => {
     try {
       // Attempt signup
+      setLoading(true);
+
       const res = await myApi.post("/auth/google", {
         token: credentialResponse.credential,
       });
+      setLoading(false);
+
       const user = res.data.user;
 
       // Save user data locally
@@ -54,6 +77,8 @@ const SignUp = () => {
       toast.success("Signed up with Google!");
       navigate("/");
     } catch (error) {
+      setLoading(false);
+
       if (error.response?.status === 409) {
         // User already exists, try login
         try {
@@ -91,6 +116,14 @@ const SignUp = () => {
             Let’s get started by filling out the information below
           </p>
 
+          {loading && (
+            <div className="flex gap-2.5 items-center justify-center">
+              <LoaderComp />
+              <p className="text-xs opacity-80">
+                Signing you up. This may take a while...
+              </p>
+            </div>
+          )}
           {/* Name */}
           <div className="flex gap-4 w-full">
             <input
@@ -165,7 +198,7 @@ const SignUp = () => {
           <div className="w-full flex justify-center">
             <GoogleLogin
               onSuccess={handleGoogleAuth}
-              onError={() => toast.error("Google login failed")}
+              onError={() => toast.error("Google signup failed")}
               useOneTap
             />
           </div>

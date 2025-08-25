@@ -11,6 +11,7 @@ const Login = () => {
   const navigate = useNavigate();
   const myApi = useContext(ApiContext);
   const [logIn, setLogIn] = useState({ email: "", password: "" });
+  const [loading, setLoading] = useState(false);
 
   const changeLogInInput = (e) =>
     setLogIn({ ...logIn, [e.target.name]: e.target.value });
@@ -18,28 +19,35 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setLoading(true);
       const res = await myApi.post("/auth/sign-in", logIn);
       const user = res.data.user;
       localStorage.setItem("firstName", user.firstName);
       localStorage.setItem("lastName", user.lastName);
+      setLoading(false);
       toast.success(`Welcome back, ${user.firstName}!`);
       navigate("/");
     } catch (error) {
+      setLoading(false);
+
       toast.error(error.response?.data?.message || "Login failed");
     }
   };
 
   const handleGoogleLogin = async (credentialResponse) => {
     try {
+      setLoading(true);
       const res = await myApi.post("/auth/google", {
         token: credentialResponse.credential,
       });
       const user = res.data.user;
       localStorage.setItem("firstName", user.firstName);
       localStorage.setItem("lastName", user.lastName);
+      setLoading(false);
       toast.success(`Welcome back, ${user.firstName}!`);
       navigate("/");
     } catch (error) {
+      setLoading(false);
       if (error.response?.status === 404) {
         toast.error("User not found. Please sign up first.");
       } else {
@@ -63,6 +71,14 @@ const Login = () => {
           <p className="text-gray-600 text-sm">
             Sign in to continue exploring properties.
           </p>
+          {loading && (
+            <div className="flex gap-2.5 items-center justify-center">
+              <LoaderComp />
+              <p className="text-xs opacity-80">
+                Signing in... This may take a while...
+              </p>
+            </div>
+          )}
 
           {/* Email */}
           <input

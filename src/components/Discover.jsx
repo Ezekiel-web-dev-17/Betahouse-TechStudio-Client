@@ -1,58 +1,37 @@
 import { BsFillGeoAltFill } from "react-icons/bs";
-import discover1 from "../assets/Discover1.svg";
-import discover2 from "../assets/Discover2.svg";
-import discover3 from "../assets/Discover3.svg";
-import discover4 from "../assets/Discover4.svg";
 import backArr from "../assets/backArr.svg";
 import nextArr from "../assets/nextArr.svg";
-import { useRef, useState } from "react";
-
-const discoverApi = [
-  {
-    title: "Semi Detached Duplex",
-    price: "1, 430,000,000",
-    image: discover1,
-  },
-  {
-    title: "Special Duplex",
-    price: "670,000,000",
-    image: discover2,
-  },
-  {
-    title: "Split-Level House",
-    price: "340,000,000",
-    image: discover3,
-  },
-  {
-    title: "Twin Duplex",
-    price: "290,000,000",
-    image: discover4,
-  },
-  {
-    title: "Semi Detached Duplex",
-    price: "1, 430,000,000",
-    image: discover1,
-  },
-  {
-    title: "Special Duplex",
-    price: "670,000,000",
-    image: discover2,
-  },
-  {
-    title: "Twin Duplex",
-    price: "290,000,000",
-    image: discover4,
-  },
-];
+import { useContext, useEffect, useRef, useState } from "react";
+import { ApiContext } from "../ApiContext";
+import { toast } from "react-toastify";
+import LoaderComp from "./LoaderComp";
 
 const Discover = () => {
   const discoverRef = useRef(null);
   const [index, setIndex] = useState(0);
   const [activeLeft, setActiveLeft] = useState(false);
   const [activeRight, setActiveRight] = useState(false);
+  const [discoverApi, setDiscoverApi] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState(
+    "Waking up the server, this may take a few seconds..."
+  );
   const itemWidth = 265; // width of one card (adjust if needed)
   const maxIndex = 1;
   const mobile = window.innerWidth;
+  const myApi = useContext(ApiContext);
+
+  const getDiscover = async () => {
+    try {
+      setLoading(true);
+      const discover = await myApi.get("/discover/");
+
+      setDiscoverApi(discover.data.properties);
+      setLoading(false);
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
 
   const handleSwipeRight = (e) => {
     if (mobile <= 1270) return;
@@ -73,12 +52,25 @@ const Discover = () => {
       setIndex(index - 1);
     }
   };
+
+  useEffect(() => {
+    setMessage("Server is awake! Fetching popular properties...");
+    getDiscover();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <section className="my-18 mx-10 lg:m-20 flex flex-col gap-10 lg:px-14 relative">
       <h3 className="font-semibold text-4xl">
         Discover Our Popular Properties
       </h3>
       {mobile <= 1270 && <h6>Scroll to view more.</h6>}
+      {loading && (
+        <div className="text-center my-10">
+          <LoaderComp />
+          <p className="mt-4 font-thin text-lg">{message}</p>
+        </div>
+      )}
+
       <img
         src={backArr}
         alt="Back Arrow"
@@ -106,7 +98,10 @@ const Discover = () => {
               key={i}
               className="disc relative min-w-11/12 sm:min-w-5/12 lg:min-w-1/4"
             >
-              <img src={discover.image} alt="Discover properties first image" />
+              <img
+                src={discover.image.replace("../utils", "/utils")}
+                alt="Discover properties first image"
+              />
               <div className="absolute bottom-0 w-4/4 flex flex-col items-start gap-2 rounded-b-xl bg-[#4a4a4c33] p-4 backdrop-blur-xs">
                 <h5 className="font-semibold text-xl">{discover.title}</h5>
                 <h5 className="font-semibold text-xl">₦{discover.price}</h5>

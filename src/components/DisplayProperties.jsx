@@ -12,6 +12,7 @@ import { toast } from "react-toastify";
 import queryArrow from "../assets/Vector (10).svg";
 import { ApiContext, PropertiesContext } from "../ApiContext";
 import LoaderComp from "./LoaderComp";
+
 const DisplayProperties = () => {
   const { propertiesFromApi, setPropertiesFromApi } =
     useContext(PropertiesContext);
@@ -82,8 +83,6 @@ const DisplayProperties = () => {
   console.log(properties);
   return (
     <section className="px-10 lg:px-34 pt-15 relative">
-      {loading && LoaderComp}
-
       {!filterMode && (
         <div className="flex flex-col md:flex-row items-center justify-between gap-3 text-[16px] sm:text-xl font-medium">
           <div className=" flex flex-col md:flex-row gap-x-10">
