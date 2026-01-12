@@ -61,7 +61,7 @@ const DisplayProperties = () => {
         setProperties(propertiesFromApi);
         setFilterMode(true);
       } else {
-        const res = await myApi.get(`/property?page=${active}&lmt=9`);
+        const res = await myApi.get(`/property?page=${active}&limit=9`);
         setProperties(res.data.properties);
         setFilterMode(false);
       }
