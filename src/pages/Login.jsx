@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { ApiContext } from "../ApiContext";
 import { toast } from "react-toastify";
 import { GoogleLogin } from "@react-oauth/google";
+import LoaderComp from "../components/LoaderComp";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -73,7 +74,7 @@ const Login = () => {
           </p>
           {loading && (
             <div className="flex gap-2.5 items-center justify-center">
-              <LoaderComp />
+              <LoaderComp/>
               <p className="text-xs opacity-80">
                 Signing in... This may take a while...
               </p>

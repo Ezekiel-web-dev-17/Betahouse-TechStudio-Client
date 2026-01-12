@@ -80,7 +80,6 @@ const DisplayProperties = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active, myApi, propertiesFromApi]);
 
-  console.log(properties);
   return (
     <section className="px-10 lg:px-34 pt-15 relative">
       {!filterMode && (
