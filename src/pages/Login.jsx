@@ -11,26 +11,49 @@ import LoaderComp from "../components/LoaderComp";
 const Login = () => {
   const navigate = useNavigate();
   const myApi = useContext(ApiContext);
-  const [logIn, setLogIn] = useState({ email: "", password: "" });
+  const [logIn, setLogIn] = useState({ email: "", password: "", rememberMe: false });
   const [loading, setLoading] = useState(false);
 
-  const changeLogInInput = (e) =>
-    setLogIn({ ...logIn, [e.target.name]: e.target.value });
+  const changeLogInInput = (e) => {
+    const { name, value, type, checked } = e.target;
+    setLogIn((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       setLoading(true);
       const res = await myApi.post("/auth/sign-in", logIn);
-      const user = res.data.user;
-      localStorage.setItem("firstName", user.firstName);
-      localStorage.setItem("lastName", user.lastName);
+      const { user, jwt, token } = res.data;
+      const authToken = jwt || token;
+      if (authToken) {
+        if (logIn.rememberMe) {
+          localStorage.setItem("token", authToken);
+          sessionStorage.removeItem("token");
+        } else {
+          sessionStorage.setItem("token", authToken);
+          localStorage.removeItem("token");
+        }
+      }
+      if (logIn.rememberMe) {
+        localStorage.setItem("firstName", user?.firstName || "");
+        localStorage.setItem("lastName", user?.lastName || "");
+        sessionStorage.removeItem("firstName");
+        sessionStorage.removeItem("lastName");
+      } else {
+        sessionStorage.setItem("firstName", user?.firstName || "");
+        sessionStorage.setItem("lastName", user?.lastName || "");
+        localStorage.removeItem("firstName");
+        localStorage.removeItem("lastName");
+      }
       setLoading(false);
-      toast.success(`Welcome back, ${user.firstName}!`);
+      toast.success(`Welcome back, ${user?.firstName || "User"}!`);
       navigate("/");
     } catch (error) {
       setLoading(false);
-
       toast.error(error.response?.data?.message || "Login failed");
     }
   };
@@ -41,19 +64,20 @@ const Login = () => {
       const res = await myApi.post("/auth/google", {
         token: credentialResponse.credential,
       });
-      const user = res.data.user;
-      localStorage.setItem("firstName", user.firstName);
-      localStorage.setItem("lastName", user.lastName);
+      const { user, jwt, token } = res.data;
+      const authToken = jwt || token;
+      if (authToken) {
+        sessionStorage.setItem("token", authToken);
+        localStorage.setItem("token", authToken);
+      }
+      localStorage.setItem("firstName", user?.firstName || "");
+      localStorage.setItem("lastName", user?.lastName || "");
       setLoading(false);
-      toast.success(`Welcome back, ${user.firstName}!`);
+      toast.success(`Welcome back, ${user?.firstName || "User"}!`);
       navigate("/");
     } catch (error) {
       setLoading(false);
-      if (error.response?.status === 404) {
-        toast.error("User not found. Please sign up first.");
-      } else {
-        toast.error(error.response?.data?.message || "Google login failed");
-      }
+      toast.error(error.response?.data?.message || "Google authentication failed");
       console.error("Google login error:", error);
     }
   };
@@ -106,7 +130,7 @@ const Login = () => {
           {/* Remember + Forgot */}
           <div className="flex justify-between items-center text-sm">
             <label className="flex items-center gap-2">
-              <input type="checkbox" className="accent-[var(--accent-color)]" />
+              <input type="checkbox" name="rememberMe" checked={logIn.rememberMe} onChange={changeLogInInput} className="accent-(--accent-color) cursor-pointer" />
               Remember Me
             </label>
             <p className="text-red-500 cursor-pointer">Forgot Password?</p>
@@ -115,7 +139,7 @@ const Login = () => {
           {/* Sign in button */}
           <button
             type="submit"
-            className="py-3 text-lg font-semibold bg-[var(--accent-color)] rounded-xl text-white w-full cursor-pointer"
+            className="py-3 text-lg font-semibold bg-(--accent-color) rounded-xl text-white w-full cursor-pointer"
           >
             Sign In
           </button>
@@ -141,7 +165,7 @@ const Login = () => {
             Don’t have an account?{" "}
             <Link
               to="/sign-up"
-              className="text-[var(--accent-color)] font-medium"
+              className="text-(--accent-color) font-medium"
             >
               Sign up
             </Link>

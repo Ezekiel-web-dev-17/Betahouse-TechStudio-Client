@@ -32,72 +32,45 @@ const SignUp = () => {
         throw new Error("Passwords do not match");
       }
 
-      console.log("res:", "sending request...");
       const res = await myApi.post("/auth/sign-up", signUp);
+      const { user, jwt, token } = res.data;
+      const authToken = jwt || token;
+      if (authToken) {
+        sessionStorage.setItem("token", authToken);
+        localStorage.setItem("token", authToken);
+      }
+      localStorage.setItem("firstName", user?.firstName || "");
+      localStorage.setItem("lastName", user?.lastName || "");
       setLoading(false);
-      console.log("res:", res);
-      const user = res.data.user;
-      localStorage.setItem("firstName", user.firstName);
-      localStorage.setItem("lastName", user.lastName);
       toast.success("Account created successfully!");
       navigate("/");
     } catch (err) {
       setLoading(false);
-
-      if (err.message.includes("409")) {
-        toast.error("User already exists!");
-      } else if (err.message.includes("400")) {
-        toast.error("All fields are required.");
-      } else if (err.message.includes("429")) {
-        toast.error("Too many attempts.");
-      } else if (err.message.includes("500")) {
-        toast.error("There is an error on our part.");
-      } else {
-        toast.error(err.message || "Error signing user up.");
-      }
+      const errorMsg = err?.response?.data?.message || err?.message || "Error signing user up.";
+      toast.error(errorMsg);
     }
   };
 
   const handleGoogleAuth = async (credentialResponse) => {
     try {
-      // Attempt signup
       setLoading(true);
-
       const res = await myApi.post("/auth/google", {
         token: credentialResponse.credential,
       });
+      const { user, jwt, token } = res.data;
+      const authToken = jwt || token;
+      if (authToken) {
+        sessionStorage.setItem("token", authToken);
+        localStorage.setItem("token", authToken);
+      }
+      localStorage.setItem("firstName", user?.firstName || "");
+      localStorage.setItem("lastName", user?.lastName || "");
       setLoading(false);
-
-      const user = res.data.user;
-
-      // Save user data locally
-      localStorage.setItem("firstName", user.firstName);
-      localStorage.setItem("lastName", user.lastName);
-
-      toast.success("Signed up with Google!");
+      toast.success("Signed up successfully with Google!");
       navigate("/");
     } catch (error) {
       setLoading(false);
-
-      if (error.response?.status === 409) {
-        // User already exists, try login
-        try {
-          const res = await myApi.post("/auth/sign-in", {
-            email: error.response.data.user.email,
-            password: error.response.data.user.password || "dummy", // backend must handle Google login properly
-          });
-          const user = res.data.user;
-          localStorage.setItem("firstName", user.firstName);
-          localStorage.setItem("lastName", user.lastName);
-          toast.success("Signed in with Google!");
-          navigate("/");
-        } catch (loginErr) {
-          console.log(loginErr);
-          toast.error("Google login failed. Please try again.");
-        }
-        return;
-      }
-      toast.error("Google signup failed. Please try again.");
+      toast.error(error?.response?.data?.message || "Google authentication failed. Please try again.");
     }
   };
 
@@ -176,14 +149,14 @@ const SignUp = () => {
             <input
               type="checkbox"
               required
-              className="accent-[var(--accent-color)]"
+              className="accent-(--accent-color)"
             />
             <span>I agree to Terms of Service and Privacy Policy</span>
           </div>
 
           <button
             type="submit"
-            className="py-3 text-lg font-semibold bg-[var(--accent-color)] w-full rounded-xl text-white"
+            className="py-3 text-lg font-semibold bg-(--accent-color) w-full rounded-xl text-white"
           >
             Sign Up
           </button>
@@ -207,7 +180,7 @@ const SignUp = () => {
             Already have an account?{" "}
             <Link
               to="/login"
-              className="text-[var(--accent-color)] font-medium"
+              className="text-(--accent-color) font-medium"
             >
               Sign in
             </Link>

@@ -11,8 +11,10 @@ const NavBar = () => {
   const [openMenu, setOpenMenu] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
   const [menuBtn, setMenuBtn] = useState(true);
-  const firstname = localStorage.getItem("firstName");
-  const lastname = localStorage.getItem("lastName");
+  const firstname =
+    sessionStorage.getItem("firstName") || localStorage.getItem("firstName");
+  const lastname =
+    sessionStorage.getItem("lastName") || localStorage.getItem("lastName");
   const user = { firstname, lastname };
   return (
     <div className="">
