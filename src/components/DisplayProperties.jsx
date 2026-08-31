@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import filterImg from "../assets/Icon (1).svg";
 import { IoIosArrowDown } from "react-icons/io";
 import { BsFillGeoAltFill, BsShare, BsHeart } from "react-icons/bs";
@@ -26,57 +26,80 @@ const DisplayProperties = () => {
   const [active, setActive] = useState(1);
   const myApi = useContext(ApiContext);
 
-  const checkServer = async () => {
+  const retryCountRef = useRef(0);
+  const timerRef = useRef(null);
+  const MAX_RETRIES = 5;
+
+  const getProperties = async (isRetry = false) => {
+    if (!isRetry) {
+      retryCountRef.current = 0;
+    }
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+
+    if (propertiesFromApi && propertiesFromApi.length >= 1) {
+      setProperties(propertiesFromApi);
+      setFilterMode(true);
+      setLoading(false);
+      setError(null);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
     try {
-      const res = await myApi.get("/property");
-      if (res.data) {
-        setMessage("✅ Server is awake! 🚀 Fetching properties...");
-        getProperties();
-      } else {
-        setTimeout(checkServer(), 3000);
+      const res = await myApi.get(`/property?page=${active}&limit=9`);
+      if (res.data?.properties) {
+        setProperties(res.data.properties);
+        setFilterMode(false);
+        setLoading(false);
+        retryCountRef.current = 0;
       }
     } catch (err) {
-      // server still cold
-      console.log(err);
-      setTimeout(checkServer(), 3000);
+      console.error("Error fetching properties:", err);
+      if (retryCountRef.current < MAX_RETRIES) {
+        retryCountRef.current += 1;
+        setMessage(
+          `Waking up the server, retrying (${retryCountRef.current}/${MAX_RETRIES})...`
+        );
+        timerRef.current = setTimeout(() => {
+          getProperties(true);
+        }, 3000);
+      } else {
+        setLoading(false);
+        const errMsg =
+          "Unable to connect to the server. Please check your internet connection or reload the page.";
+        setError(errMsg);
+        toast.error(errMsg);
+      }
     }
   };
 
   const sortBy = async (by, order) => {
     try {
-      // https://betahouse-techstudio-server-1.onrender.com/api/v1/property/sort-by-title?order=asc
+      setLoading(true);
+      setError(null);
       const res = await myApi.get(`/property/sort-by-${by}?order=${order}`);
-      setMessage("✅ Server is awake! 🚀 Fetching properties...");
-      setProperties(res.data.properties);
-    } catch (err) {
-      // server still cold
-      console.log(err);
-      setTimeout(checkServer, 3000);
-    }
-  };
-
-  const getProperties = async () => {
-    try {
-      if (propertiesFromApi.length >= 1) {
-        setProperties(propertiesFromApi);
-        setFilterMode(true);
-      } else {
-        const res = await myApi.get(`/property?page=${active}&limit=9`);
+      if (res.data?.properties) {
         setProperties(res.data.properties);
-        setFilterMode(false);
       }
       setLoading(false);
     } catch (err) {
       setLoading(false);
-      console.error("Error fetching properties:", err);
-      setError(`${err?.response?.data?.message}. Try refreshing the page.`);
-      toast.error("Failed to fetch properties.");
+      toast.error("Failed to sort properties.");
     }
   };
 
   useEffect(() => {
-    setLoading(true);
-    checkServer();
+    getProperties();
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active, myApi, propertiesFromApi]);
 
@@ -135,7 +158,25 @@ const DisplayProperties = () => {
           <p className="mt-4 font-semibold text-lg">{message}</p>
         </div>
       )}
-      {error && toast.error(error)}
+      {error && !loading && (
+        <div className="text-center my-10 p-6 bg-red-50 border border-red-200 rounded-xl max-w-lg mx-auto">
+          <p className="text-red-600 font-medium mb-4">{error}</p>
+          <div className="flex justify-center gap-3">
+            <button
+              onClick={() => getProperties()}
+              className="px-5 py-2 bg-(--accent-color) text-white rounded-lg cursor-pointer hover:opacity-90 transition font-medium text-sm"
+            >
+              Try Again
+            </button>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-5 py-2 bg-gray-800 text-white rounded-lg cursor-pointer hover:bg-gray-700 transition font-medium text-sm"
+            >
+              Reload Page
+            </button>
+          </div>
+        </div>
+      )}
 
       {filterMode && !loading && (
         <div
