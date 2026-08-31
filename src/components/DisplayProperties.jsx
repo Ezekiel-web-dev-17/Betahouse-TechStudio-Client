@@ -59,23 +59,20 @@ const DisplayProperties = () => {
         retryCountRef.current = 0;
       }
     } catch (err) {
-      console.error("Error fetching properties:", err);
-      if (retryCountRef.current < MAX_RETRIES) {
-        retryCountRef.current += 1;
-        setMessage(
-          `Waking up the server, retrying (${retryCountRef.current}/${MAX_RETRIES})...`
-        );
-        timerRef.current = setTimeout(() => {
-          getProperties(true);
-        }, 3000);
-      } else {
-        setLoading(false);
-        const errMsg =
-          "Unable to connect to the server. Please check your internet connection or reload the page.";
-        setError(errMsg);
-        toast.error(errMsg);
-      }
-    }
+  if (retryCountRef.current < MAX_RETRIES) {
+    retryCountRef.current += 1;
+    setMessage(`Waking up the server, retrying (${retryCountRef.current}/${MAX_RETRIES})...`);
+    timerRef.current = setTimeout(() => getProperties(true), 3000);
+  } else {
+    // ✅ Log only when retries fail completely
+    console.error("Error fetching properties after retries:", err);
+    setLoading(false);
+    const errMsg = "Unable to connect to the server. Please check your internet connection or reload the page.";
+    setError(errMsg);
+    toast.error(errMsg);
+  }
+}
+
   };
 
   const sortBy = async (by, order) => {
