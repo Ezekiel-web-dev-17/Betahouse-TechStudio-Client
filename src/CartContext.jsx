@@ -22,15 +22,28 @@ export function CartProvider({ children }) {
   }, [cart]);
 
   const addToCart = (property) => {
-    if (!property) return;
+    if (!property) return false;
+
+    const token =
+      sessionStorage.getItem("token") ||
+      localStorage.getItem("token") ||
+      sessionStorage.getItem("firstName") ||
+      localStorage.getItem("firstName");
+
+    if (!token) {
+      toast.warning("Please sign in to add properties to your cart or make reservations.");
+      return false;
+    }
+
     const propertyId = property._id || property.id;
     const exists = cart.find((item) => (item._id || item.id) === propertyId);
     if (exists) {
       toast.info(`"${property.title || 'Property'}" is already in your cart!`);
-      return;
+      return false;
     }
     setCart((prev) => [...prev, property]);
     toast.success(`"${property.title || 'Property'}" added to your cart!`);
+    return true;
   };
 
   const removeFromCart = (propertyId) => {

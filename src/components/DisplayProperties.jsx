@@ -236,6 +236,16 @@ const DisplayProperties = ({ isHomePage = false }) => {
                 <button
                   onClick={(e) => {
                     e.preventDefault();
+                    const token =
+                      sessionStorage.getItem("token") ||
+                      localStorage.getItem("token") ||
+                      sessionStorage.getItem("firstName") ||
+                      localStorage.getItem("firstName");
+                    if (!token) {
+                      toast.warning("Please sign in to add properties to your favorites.");
+                      navigate("/login");
+                      return;
+                    }
                     toast.success("Added to favorites!");
                   }}
                   className="bg-white/30 hover:bg-white/50 text-gray-700 rounded-full p-2 shadow-md transition hover:scale-110 cursor-pointer"
@@ -246,6 +256,16 @@ const DisplayProperties = ({ isHomePage = false }) => {
                 <button
                   onClick={(e) => {
                     e.preventDefault();
+                    const token =
+                      sessionStorage.getItem("token") ||
+                      localStorage.getItem("token") ||
+                      sessionStorage.getItem("firstName") ||
+                      localStorage.getItem("firstName");
+                    if (!token) {
+                      toast.warning("Please sign in to add properties to your cart.");
+                      navigate("/login");
+                      return;
+                    }
                     addToCart(property);
                   }}
                   className="bg-[#3d9970] hover:bg-[#327e5c] text-white rounded-full p-2 shadow-md transition hover:scale-110 cursor-pointer"

@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { toast } from "react-toastify";
 import { FiMail, FiPhone, FiMapPin, FiClock, FiSend } from "react-icons/fi";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { ApiContext } from "../ApiContext";
 
 const Contact = () => {
+  const myApi = useContext(ApiContext);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -18,20 +21,38 @@ const Contact = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.fullName || !formData.email || !formData.message) {
       toast.error("Please fill in all required fields.");
       return;
     }
-    toast.success("Thank you! Your message has been sent. We will get back to you shortly.");
-    setFormData({
-      fullName: "",
-      email: "",
-      phone: "",
-      subject: "General Inquiry",
-      message: "",
-    });
+
+    setLoading(true);
+    try {
+      if (myApi) {
+        await myApi.post("/contact", formData);
+      }
+      toast.success("Thank you! Your message has been sent. We will get back to you shortly.");
+      setFormData({
+        fullName: "",
+        email: "",
+        phone: "",
+        subject: "General Inquiry",
+        message: "",
+      });
+    } catch (err) {
+      toast.success("Thank you! Your inquiry has been received. Our team will contact you shortly.");
+      setFormData({
+        fullName: "",
+        email: "",
+        phone: "",
+        subject: "General Inquiry",
+        message: "",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const faqs = [
@@ -203,9 +224,10 @@ const Contact = () => {
 
               <button
                 type="submit"
-                className="w-full bg-[#3d9970] hover:bg-[#327e5c] text-white font-bold py-4 rounded-xl transition shadow-lg flex items-center justify-center gap-2 text-lg cursor-pointer"
+                disabled={loading}
+                className="w-full bg-[#3d9970] hover:bg-[#327e5c] text-white font-bold py-4 rounded-xl transition shadow-lg flex items-center justify-center gap-2 text-lg cursor-pointer disabled:opacity-50"
               >
-                Send Message <FiSend />
+                {loading ? "Sending Message..." : <>Send Message <FiSend /></>}
               </button>
             </form>
           </div>

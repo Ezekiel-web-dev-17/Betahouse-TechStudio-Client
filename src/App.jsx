@@ -15,6 +15,7 @@ import Checkout from "./pages/Checkout";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import ScrollToTop from "./components/ScrollToTop";
+import ProtectedRoute from "./components/ProtectedRoute";
 import { ApiProvider } from "./Axios";
 import { ToastContainer } from "react-toastify";
 import { PropertiesProvider } from "./PropertiesContext";
@@ -38,8 +39,22 @@ function App() {
                   <Route path="/contact" element={<Contact />} />
                   <Route path="/blog" element={<Blog />} />
                   <Route path="/blog/:id" element={<BlogPost />} />
-                  <Route path="/cart" element={<Cart />} />
-                  <Route path="/checkout" element={<Checkout />} />
+                  <Route
+                    path="/cart"
+                    element={
+                      <ProtectedRoute>
+                        <Cart />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/checkout"
+                    element={
+                      <ProtectedRoute>
+                        <Checkout />
+                      </ProtectedRoute>
+                    }
+                  />
                 </Route>
 
                 <Route element={<AuthLayout />}>

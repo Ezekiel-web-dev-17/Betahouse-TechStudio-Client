@@ -8,7 +8,7 @@ const Home = () => {
     <main className="min-h-screen">
       <Header />
       <DisplayProperties isHomePage={true} />
-      <Discover />
+      <Discover isHomePage={true} />
     </main>
   );
 };

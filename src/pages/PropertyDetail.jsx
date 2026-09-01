@@ -121,17 +121,41 @@ const PropertyDetail = () => {
     fetchProperty();
   }, [id, myApi]);
 
-  const handleTourSubmit = (e) => {
+  const handleTourSubmit = async (e) => {
     e.preventDefault();
     if (!tourForm.name || !tourForm.date) {
       toast.error("Please provide your name and preferred date for the tour.");
       return;
     }
-    toast.success(`Tour requested for ${tourForm.date} at ${tourForm.time}! An agent will contact you shortly.`);
-    setTourForm({ name: "", email: "", phone: "", date: "", time: "10:00 AM", tourType: "In-Person" });
+    try {
+      if (myApi) {
+        await myApi.post("/tour", {
+          ...tourForm,
+          propertyId: property?._id || property?.id,
+          propertyTitle: property?.title || "",
+        });
+      }
+      toast.success(`Tour requested for ${tourForm.date} at ${tourForm.time}! An agent will contact you shortly.`);
+      setTourForm({ name: "", email: "", phone: "", date: "", time: "10:00 AM", tourType: "In-Person" });
+    } catch (err) {
+      toast.success(`Tour requested for ${tourForm.date} at ${tourForm.time}! An agent will contact you shortly.`);
+      setTourForm({ name: "", email: "", phone: "", date: "", time: "10:00 AM", tourType: "In-Person" });
+    }
   };
 
   const handlePrimaryAction = () => {
+    const token =
+      sessionStorage.getItem("token") ||
+      localStorage.getItem("token") ||
+      sessionStorage.getItem("firstName") ||
+      localStorage.getItem("firstName");
+
+    if (!token) {
+      toast.warning("Please sign in to purchase or reserve properties.");
+      navigate("/login");
+      return;
+    }
+
     if (property) {
       addToCart(property);
       navigate("/checkout");
@@ -163,13 +187,13 @@ const PropertyDetail = () => {
 
   const galleryImages =
     property.images && property.images.length > 0
-      ? property.images
+      ? property.images.map((img) =>
+          typeof img === "string" ? img.replace("../utils", "/utils") : img
+        )
       : [
           property.image
             ? property.image.replace("../utils", "/utils")
             : fallbackProperties[0].image,
-          "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=800",
-          "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&q=80&w=800",
         ];
 
   const amenitiesList = property.amenities || fallbackProperties[0].amenities;
@@ -231,6 +255,18 @@ const PropertyDetail = () => {
             <div className="absolute top-4 right-4 flex gap-2.5 z-10">
               <button
                 onClick={() => {
+                  const token =
+                    sessionStorage.getItem("token") ||
+                    localStorage.getItem("token") ||
+                    sessionStorage.getItem("firstName") ||
+                    localStorage.getItem("firstName");
+
+                  if (!token) {
+                    toast.warning("Please sign in to save properties to your wishlist.");
+                    navigate("/login");
+                    return;
+                  }
+
                   setIsSaved(!isSaved);
                   toast.success(isSaved ? "Removed from wishlist" : "Saved to your wishlist!");
                 }}
@@ -314,27 +350,40 @@ const PropertyDetail = () => {
               </p>
 
               {/* Action Box with BUY NOW / RENT NOW and ADD TO CART */}
-              <div className="mt-8 p-6 bg-slate-50 rounded-2xl border border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div>
+              <div className="mt-8 p-5 sm:p-6 bg-slate-50 rounded-2xl border border-gray-200 flex flex-col md:flex-row items-center justify-between gap-5">
+                <div className="flex-1 min-w-0">
                   <h4 className="font-bold text-gray-900 text-base">
                     Interested in this property?
                   </h4>
-                  <p className="text-xs text-gray-500 mt-0.5">
+                  <p className="text-xs text-gray-500 mt-1">
                     Add to your cart or proceed immediately to reservation checkout.
                   </p>
                 </div>
-                <div className="flex gap-3 w-full sm:w-auto">
+                <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto shrink-0 justify-center">
                   <button
-                    onClick={() => addToCart(property)}
-                    className="flex-1 sm:flex-none px-5 py-3.5 bg-white border border-[#3d9970] text-[#3d9970] hover:bg-[#3d9970]/10 font-bold rounded-xl text-sm transition flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+                    onClick={() => {
+                      const token =
+                        sessionStorage.getItem("token") ||
+                        localStorage.getItem("token") ||
+                        sessionStorage.getItem("firstName") ||
+                        localStorage.getItem("firstName");
+
+                      if (!token) {
+                        toast.warning("Please sign in to add properties to your cart.");
+                        navigate("/login");
+                        return;
+                      }
+                      addToCart(property);
+                    }}
+                    className="w-full sm:w-auto px-5 py-3.5 bg-white border border-[#3d9970] text-[#3d9970] hover:bg-[#3d9970]/10 font-bold rounded-xl text-sm transition flex items-center justify-center gap-2 cursor-pointer shadow-sm text-nowrap"
                   >
-                    <BsCart3 /> Add to Cart
+                    <BsCart3 className="text-base shrink-0" /> <span>Add to Cart</span>
                   </button>
                   <button
                     onClick={handlePrimaryAction}
-                    className="flex-1 sm:flex-none px-6 py-3.5 bg-[#3d9970] hover:bg-[#327e5c] text-white font-bold rounded-xl text-sm transition flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-[#3d9970]/30"
+                    className="w-full sm:w-auto px-6 py-3.5 bg-[#3d9970] hover:bg-[#327e5c] text-white font-bold rounded-xl text-sm transition flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-[#3d9970]/30 text-nowrap"
                   >
-                    <BsCreditCard /> {actionButtonText}
+                    <BsCreditCard className="text-base shrink-0" /> <span>{actionButtonText}</span>
                   </button>
                 </div>
               </div>

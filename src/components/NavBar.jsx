@@ -14,11 +14,13 @@ const NavBar = () => {
   const [menuBtn, setMenuBtn] = useState(true);
   const { cartCount } = useContext(CartContext);
 
+  const token = sessionStorage.getItem("token") || localStorage.getItem("token");
   const firstname =
     sessionStorage.getItem("firstName") || localStorage.getItem("firstName");
   const lastname =
     sessionStorage.getItem("lastName") || localStorage.getItem("lastName");
   const user = { firstname, lastname };
+  const isAuthenticated = !!(token || firstname);
 
   const handleLogout = () => {
     sessionStorage.clear();
@@ -91,23 +93,19 @@ const NavBar = () => {
         </ul>
 
         <div className="text-white flex items-center gap-5">
-          {/* Cart Icon */}
-          <Link
-            to="/cart"
-            className="relative p-2 text-white hover:text-[#85e3b5] transition"
-            title="Shopping Cart"
-          >
-            <BsCart3 className="text-2xl" />
-            {cartCount > 0 ? (
+          {/* Cart Icon - Visible ONLY to signed-in users */}
+          {isAuthenticated && (
+            <Link
+              to="/cart"
+              className="relative p-2 text-white hover:text-[#85e3b5] transition"
+              title="Shopping Cart"
+            >
+              <BsCart3 className="text-2xl" />
               <span className="absolute -top-1 -right-1 bg-[#3d9970] text-white text-[11px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-md">
                 {cartCount}
               </span>
-            ) : (
-              <span className="absolute -top-1 -right-1 bg-[#3d9970] text-white text-[11px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-md">
-                0
-              </span>
-            )}
-          </Link>
+            </Link>
+          )}
 
           {firstname && lastname ? (
             <div className="flex gap-x-3 items-center relative cursor-pointer">
@@ -154,14 +152,15 @@ const NavBar = () => {
         </Link>
 
         <div className="flex items-center gap-4">
-          <Link to="/cart" className="relative text-white" title="Shopping Cart">
-            <BsCart3 className="text-xl" />
-            {cartCount > 0 && (
+          {/* Mobile Cart Icon - Visible ONLY to signed-in users */}
+          {isAuthenticated && (
+            <Link to="/cart" className="relative text-white" title="Shopping Cart">
+              <BsCart3 className="text-xl" />
               <span className="absolute -top-1 -right-1 bg-[#3d9970] text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
                 {cartCount}
               </span>
-            )}
-          </Link>
+            </Link>
+          )}
 
           {menuBtn && (
             <IoIosMenu
@@ -236,19 +235,22 @@ const NavBar = () => {
                 >
                   Contact Us
                 </Link>
-                <Link
-                  to="/cart"
-                  className={`p-2 rounded-lg transition flex items-center justify-between ${
-                    location.pathname === "/cart" ? "bg-[#3d9970] font-bold" : "hover:bg-white/10"
-                  }`}
-                >
-                  <span>Cart</span>
-                  {cartCount > 0 && (
-                    <span className="bg-white/20 text-white text-xs px-2 py-0.5 rounded-full font-bold">
-                      {cartCount}
-                    </span>
-                  )}
-                </Link>
+                {/* Mobile Drawer Cart Link - Visible ONLY to signed-in users */}
+                {isAuthenticated && (
+                  <Link
+                    to="/cart"
+                    className={`p-2 rounded-lg transition flex items-center justify-between ${
+                      location.pathname === "/cart" ? "bg-[#3d9970] font-bold" : "hover:bg-white/10"
+                    }`}
+                  >
+                    <span>Cart</span>
+                    {cartCount > 0 && (
+                      <span className="bg-white/20 text-white text-xs px-2 py-0.5 rounded-full font-bold">
+                        {cartCount}
+                      </span>
+                    )}
+                  </Link>
+                )}
               </ul>
 
               <div className="pt-6 border-t border-white/10 mt-auto">

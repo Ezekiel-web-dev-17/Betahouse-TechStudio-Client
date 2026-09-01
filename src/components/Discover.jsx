@@ -6,7 +6,7 @@ import { ApiContext } from "../ApiContext";
 import { toast } from "react-toastify";
 import DiscoverSkeleton from "./DiscoverSkeleton";
 
-const Discover = () => {
+const Discover = ({isHomePage}) => {
   const discoverRef = useRef(null);
   const [index, setIndex] = useState(0);
   const [activeLeft, setActiveLeft] = useState(false);
@@ -56,7 +56,7 @@ const Discover = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
-    <section className="my-18 mx-10 lg:m-20 flex flex-col gap-10 lg:px-14 relative">
+    <section className={`my-18 mx-10 lg:m-20 flex-col gap-10 lg:px-14 relative ${!isHomePage ? "hidden" : "flex"}`}>
       <h3 className="font-semibold text-4xl">
         Discover Our Popular Properties
       </h3>
