@@ -5,9 +5,9 @@ import DisplayProperties from "../components/DisplayProperties";
 
 const Home = () => {
   return (
-    <main>
+    <main className="min-h-screen">
       <Header />
-      <DisplayProperties />
+      <DisplayProperties isHomePage={true} />
       <Discover />
     </main>
   );

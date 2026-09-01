@@ -1,27 +1,30 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import filterImg from "../assets/Icon (1).svg";
 import { IoIosArrowDown } from "react-icons/io";
-import { BsFillGeoAltFill, BsShare, BsHeart } from "react-icons/bs";
+import { BsFillGeoAltFill, BsShare, BsHeart, BsCartPlus, BsArrowRight } from "react-icons/bs";
 import imglink1 from "../assets/Vector (9).svg";
 import imglink2 from "../assets/Vector (8).svg";
 import imglink3 from "../assets/Vector (7).svg";
-import arrowToFro from "../assets/Vector (4).svg";
 import bed from "../assets/Icon.svg";
 import bathroom from "../assets/Vector (6).svg";
 import { toast } from "react-toastify";
 import queryArrow from "../assets/Vector (10).svg";
 import { ApiContext, PropertiesContext } from "../ApiContext";
+import { CartContext } from "../CartContext";
+import { Link, useNavigate } from "react-router-dom";
 import LoaderComp from "./LoaderComp";
 
-const DisplayProperties = () => {
-  const { propertiesFromApi, setPropertiesFromApi } =
-    useContext(PropertiesContext);
+const DisplayProperties = ({ isHomePage = false }) => {
+  const { propertiesFromApi, setPropertiesFromApi } = useContext(PropertiesContext);
+  const { addToCart } = useContext(CartContext);
+  const navigate = useNavigate();
+
   const [properties, setProperties] = useState([]);
   const [filterMode, setFilterMode] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [message, setMessage] = useState(
-    "Waking up the server, this may take a few seconds..."
+    "Loading properties..."
   );
   const [active, setActive] = useState(1);
   const myApi = useContext(ApiContext);
@@ -51,7 +54,9 @@ const DisplayProperties = () => {
     setError(null);
 
     try {
-      const res = await myApi.get(`/property?page=${active}&limit=9`);
+      const pageParam = isHomePage ? 1 : active;
+      const limitParam = isHomePage ? 9 : 9;
+      const res = await myApi.get(`/property?page=${pageParam}&limit=${limitParam}`);
       if (res.data?.properties) {
         setProperties(res.data.properties);
         setFilterMode(false);
@@ -59,20 +64,18 @@ const DisplayProperties = () => {
         retryCountRef.current = 0;
       }
     } catch (err) {
-  if (retryCountRef.current < MAX_RETRIES) {
-    retryCountRef.current += 1;
-    setMessage(`Waking up the server, retrying (${retryCountRef.current}/${MAX_RETRIES})...`);
-    timerRef.current = setTimeout(() => getProperties(true), 3000);
-  } else {
-    // ✅ Log only when retries fail completely
-    console.error("Error fetching properties after retries:", err);
-    setLoading(false);
-    const errMsg = "Unable to connect to the server. Please check your internet connection or reload the page.";
-    setError(errMsg);
-    toast.error(errMsg);
-  }
-}
-
+      if (retryCountRef.current < MAX_RETRIES) {
+        retryCountRef.current += 1;
+        setMessage(`Connecting to server, retrying (${retryCountRef.current}/${MAX_RETRIES})...`);
+        timerRef.current = setTimeout(() => getProperties(true), 3000);
+      } else {
+        console.error("Error fetching properties:", err);
+        setLoading(false);
+        const errMsg = "Unable to connect to the server. Please check your internet connection or reload the page.";
+        setError(errMsg);
+        toast.error(errMsg);
+      }
+    }
   };
 
   const sortBy = async (by, order) => {
@@ -98,76 +101,81 @@ const DisplayProperties = () => {
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [active, myApi, propertiesFromApi]);
+  }, [active, myApi, propertiesFromApi, isHomePage]);
+
+  const displayedProperties = isHomePage ? properties.slice(0, 9) : properties;
 
   return (
-    <section className="px-10 lg:px-34 pt-15 relative">
+    <section className="px-6 sm:px-10 lg:px-24 pt-12 pb-16 relative">
       {!filterMode && (
-        <div className="flex flex-col md:flex-row items-center justify-between gap-3 text-[16px] sm:text-xl font-medium">
-          <div className=" flex flex-col md:flex-row gap-x-10">
-            <div className="more-filter flex gap-4">
-              <img src={filterImg} alt="" />
-              <p className="text-nowrap">More Filter</p>
-            </div>
-            <p className="text-nowrap">
-              Showing{" "}
-              {properties.length > 9
-                ? "Properties in sorted order"
-                : active === 1
-                ? "1 - 9"
-                : "10 - 15"}{" "}
-              of 15 results
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-[16px] sm:text-xl font-medium mb-6">
+          <div className="flex flex-col md:flex-row items-center gap-4 sm:gap-10">
+            {!isHomePage && (
+              <div className="more-filter flex items-center gap-3">
+                <img src={filterImg} alt="" />
+                <p className="text-nowrap font-semibold">More Filter</p>
+              </div>
+            )}
+            <p className="text-nowrap text-gray-700 font-semibold text-base sm:text-lg">
+              {isHomePage
+                ? "Featured Properties (Top 9 Listings)"
+                : `Showing ${
+                    properties.length > 9
+                      ? "Properties in sorted order"
+                      : active === 1
+                      ? "1 - 9"
+                      : "10 - 15"
+                  } of 15 results`}
             </p>
           </div>
 
-          <div className="flex items-center gap-1 lg:gap-4 relative lg:w-1/4">
-            <p className="opacity-60 text-xl text-nowrap">Sort by: </p>
-
-            <select
-              name=""
-              id=""
-              className="text-[16px] lg:text-xl font-semibold px-4 appearance-none bg-white py-1 lg:py-2 ps-1 lg:pr-8 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 max-w-8/12
-    "
-              onChange={(e) => {
-                let value = e.target.value;
-                value === "Alphabetical"
-                  ? sortBy("title", "asc")
-                  : value === "Price: Low to High"
-                  ? sortBy("price", "asc")
-                  : value === "Price: High to Low"
-                  ? sortBy("price", "des")
-                  : getProperties();
-              }}
-            >
-              <option value="Default">Default</option>
-              <option value="Alphabetical">Alphabetical</option>
-              <option value="Price: Low to High">Price: Low to High</option>
-              <option value="Price: High to Low">Price: High to Low</option>
-            </select>
-
-            <IoIosArrowDown className="absolute right-1 lg:right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500" />
-          </div>
+          {!isHomePage && (
+            <div className="flex items-center gap-2 relative">
+              <p className="opacity-75 text-sm sm:text-base text-nowrap font-medium">Sort by: </p>
+              <select
+                className="text-sm sm:text-base font-semibold px-4 appearance-none bg-white py-2 ps-3 pr-8 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#3d9970] cursor-pointer shadow-sm"
+                onChange={(e) => {
+                  let value = e.target.value;
+                  value === "Alphabetical"
+                    ? sortBy("title", "asc")
+                    : value === "Price: Low to High"
+                    ? sortBy("price", "asc")
+                    : value === "Price: High to Low"
+                    ? sortBy("price", "des")
+                    : getProperties();
+                }}
+              >
+                <option value="Default">Default</option>
+                <option value="Alphabetical">Alphabetical</option>
+                <option value="Price: Low to High">Price: Low to High</option>
+                <option value="Price: High to Low">Price: High to Low</option>
+              </select>
+              <IoIosArrowDown className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500" />
+            </div>
+          )}
         </div>
       )}
+
       {loading && (
-        <div className="text-center my-10">
+        <div className="text-center my-14 flex flex-col items-center justify-center">
           <LoaderComp />
-          <p className="mt-4 font-semibold text-lg">{message}</p>
+          <p className="mt-4 font-semibold text-base sm:text-lg text-gray-700">{message}</p>
         </div>
       )}
+
       {error && !loading && (
-        <div className="text-center my-10 p-6 bg-red-50 border border-red-200 rounded-xl max-w-lg mx-auto">
+        <div className="text-center my-10 p-6 bg-red-50 border border-red-200 rounded-2xl max-w-lg mx-auto shadow-sm">
           <p className="text-red-600 font-medium mb-4">{error}</p>
           <div className="flex justify-center gap-3">
             <button
               onClick={() => getProperties()}
-              className="px-5 py-2 bg-(--accent-color) text-white rounded-lg cursor-pointer hover:opacity-90 transition font-medium text-sm"
+              className="px-5 py-2 bg-[#3d9970] text-white rounded-xl cursor-pointer hover:bg-[#327e5c] transition font-medium text-sm shadow"
             >
               Try Again
             </button>
             <button
               onClick={() => window.location.reload()}
-              className="px-5 py-2 bg-gray-800 text-white rounded-lg cursor-pointer hover:bg-gray-700 transition font-medium text-sm"
+              className="px-5 py-2 bg-gray-800 text-white rounded-xl cursor-pointer hover:bg-gray-700 transition font-medium text-sm"
             >
               Reload Page
             </button>
@@ -177,156 +185,187 @@ const DisplayProperties = () => {
 
       {filterMode && !loading && (
         <div
-          className="w-30 flex gap-10 items-center cursor-pointer"
+          className="flex gap-4 items-center cursor-pointer mb-6"
           onClick={() => {
             setPropertiesFromApi([]);
             getProperties();
           }}
         >
-          <img
-            src={queryArrow}
-            className="rotate-180 absolute"
-            alt="Back button"
-          />
-          <h4 className="text-2xl ps-5 font-bold font-mono opacity-75">Back</h4>
-          <p className="text-nowrap text-xl font-medium">
-            Showing{" "}
-            {propertiesFromApi.length >= 1
-              ? `${propertiesFromApi.length} `
-              : " "}
-            results
+          <button className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-xl text-gray-800 font-bold text-sm transition">
+            <img src={queryArrow} className="rotate-180 w-3 h-3" alt="Back button" />
+            <span>Back to All</span>
+          </button>
+          <p className="text-nowrap text-base sm:text-lg font-semibold text-gray-700">
+            Showing {propertiesFromApi.length} filtered results
           </p>
         </div>
       )}
 
-      <div className="properties grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">
-        {properties.map((property) => (
+      {/* Grid of Properties */}
+      <div className="properties grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+        {displayedProperties.map((property) => (
           <div
-            key={property._id}
-            className="rounded-xl border-2 border-gray-300 min-w-3/4 md:min-w-1/3"
+            key={property._id || property.id}
+            className="rounded-2xl border border-gray-200 bg-white group overflow-hidden shadow-sm hover:shadow-xl transition flex flex-col justify-between"
           >
-            <div className="max-h-66.25 overflow-hidden relative">
-              <div className="justify-between space-between">
-                <button
-                  className="rounded absolute left-5 top-4 px-5 py-2 bg-(--accent-color) font-medium text-[13px] text-white"
-                  disabled
-                >
+            <div className="max-h-64 overflow-hidden relative">
+              <div className="flex justify-between items-center w-full z-10 pointer-events-none">
+                <span className="rounded-lg absolute left-4 top-4 px-3.5 py-1 bg-[#3d9970] font-bold text-xs text-white shadow-xs">
                   Featured
+                </span>
+                <span className="rounded-lg absolute right-4 top-4 px-3.5 py-1 bg-white/90 backdrop-blur-xs text-gray-800 font-bold text-xs shadow-xs">
+                  For {property.whatFor || "Sale"}
+                </span>
+              </div>
+
+              {/* Action Floating Icons */}
+              <div className="flex gap-2.5 bottom-3.5 right-3.5 absolute z-10">
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigator.clipboard.writeText(
+                      `${window.location.origin}/properties/${property._id || property.id}`
+                    );
+                    toast.success("Link copied to clipboard!");
+                  }}
+                  className="bg-white/30 hover:bg-white/50 text-gray-700 rounded-full p-2 shadow-md transition hover:scale-110 cursor-pointer"
+                  title="Copy Link"
+                >
+                  <img className="w-3.5 h-3.5" src={imglink1} alt="Copy link" />
                 </button>
                 <button
-                  className="rounded absolute right-5 top-4 px-5 py-2 bg-gray-200 font-medium text-[13px] text-white "
-                  disabled
+                  onClick={(e) => {
+                    e.preventDefault();
+                    toast.success("Added to favorites!");
+                  }}
+                  className="bg-white/30 hover:bg-white/50 text-gray-700 rounded-full p-2 shadow-md transition hover:scale-110 cursor-pointer"
+                  title="Favorite"
                 >
-                  For {property.whatFor}
+                  <BsHeart className="text-sm text-white" />
                 </button>
-                <div className="flex gap-9 bottom-5 right-5 absolute">
-                  <img
-                    className="bg-gray-400 rounded p-1 overflow-visible w-1/6"
-                    src={imglink1}
-                    alt=""
-                  />
-                  <img
-                    className="bg-gray-400 rounded p-1 overflow-visible w-1/6"
-                    src={imglink2}
-                    alt=""
-                  />
-                  <img
-                    className="bg-gray-400 rounded p-1 overflow-visible w-1/6"
-                    src={imglink3}
-                    alt=""
-                  />
-                </div>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    addToCart(property);
+                  }}
+                  className="bg-[#3d9970] hover:bg-[#327e5c] text-white rounded-full p-2 shadow-md transition hover:scale-110 cursor-pointer"
+                  title="Add to Cart"
+                >
+                  <BsCartPlus className="text-sm" />
+                </button>
               </div>
-              <img
-                className="rounded-t-xl w-full"
-                src={`${property.image.replace("../utils", "/utils")}`}
-                alt=""
-              />
-            </div>
-            <div className="text-start p-4 flex flex-col gap-4">
-              <h4 className="opacity-70 font-semibold text-[20px]">
-                {property.title}
-              </h4>
-              <div className="flex gap-2 items-center">
-                <BsFillGeoAltFill className="opacity-40" /> {property.location}
-              </div>
-              <div className="flex gap-6 flex-col lg:flex-row">
-                <div className="bed-sect flex gap-2 items-center">
-                  <img src={bed} />
-                  <p>{property.bed} Bedrooms</p>
-                </div>
-                <div className="bath-sect flex gap-2 items-center">
-                  <img src={bathroom} />
-                  <p>{property.bath} Bathrooms</p>
-                </div>
-              </div>
-              <div className="border-t-2 border-gray-300 flex flex-col lg:flex-row justify-between pt-3">
-                <h4 className="font-semibold lg:text-2xl text-xl opacity-70 pb-2 lg:px-0">
-                  ₦{Number(property.amount).toLocaleString()}
-                  {property.whatFor === "Rent" ? "/1Year" : ""}
-                </h4>
 
-                <div className="flex items-center gap-3 place-content-center lg:place-content-end">
-                  <img
-                    width="20px"
-                    src={arrowToFro}
-                    alt="share between two user"
-                  />
-                  <BsShare />
-                  <BsHeart />
+              <Link to={`/properties/${property._id || property.id}`}>
+                <img
+                  className="w-full h-56 object-cover group-hover:scale-105 transition duration-500"
+                  src={
+                    property.image
+                      ? property.image.replace("../utils", "/utils")
+                      : "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=600"
+                  }
+                  alt={property.title}
+                />
+              </Link>
+            </div>
+
+            {/* Card Content Body */}
+            <div className="text-start p-5 flex flex-col gap-3">
+              <Link to={`/properties/${property._id || property.id}`}>
+                <h4 className="font-bold text-gray-900 text-lg hover:text-[#3d9970] transition line-clamp-1">
+                  {property.title}
+                </h4>
+              </Link>
+
+              <div className="flex gap-2 items-center text-xs text-gray-500 font-medium">
+                <BsFillGeoAltFill className="text-[#3d9970]" />
+                <span className="truncate">{property.location || "Victoria Island, Lagos"}</span>
+              </div>
+
+              <div className="flex gap-4 items-center text-xs text-gray-600 font-semibold py-2 border-y border-gray-100">
+                <div className="flex gap-1.5 items-center">
+                  <img src={bed} alt="" className="w-4 h-4" />
+                  <span>{property.bed || 4} Beds</span>
                 </div>
+                <div className="flex gap-1.5 items-center">
+                  <img src={bathroom} alt="" className="w-4 h-4" />
+                  <span>{property.bath || 3} Baths</span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between pt-1">
+                <div>
+                  <span className="block text-[10px] uppercase font-bold text-gray-400">Price</span>
+                  <h4 className="font-extrabold text-lg text-[#3d9970]">
+                    ₦{Number(property.amount || property.price || 0).toLocaleString()}
+                    {property.whatFor === "Rent" ? <span className="text-xs font-normal text-gray-500">/yr</span> : ""}
+                  </h4>
+                </div>
+
+                <Link
+                  to={`/properties/${property._id || property.id}`}
+                  className="px-4 py-2 bg-[#3d9970] hover:bg-[#327e5c] text-white font-bold text-xs rounded-xl shadow-xs transition"
+                >
+                  View Details
+                </Link>
               </div>
             </div>
           </div>
         ))}
       </div>
-      {!filterMode && properties.length <= 9 && (
-        <div className="paginator cursor-pointer font-semibold text-2xl flex gap-8 items-center place-content-center mt-10">
-          <img
-            src={queryArrow}
-            className="opacity-50 active:opacity-100 rotate-180"
-            alt="srcoll back arrow"
-            onClick={() => setActive((prevActive) => prevActive - 1)}
-          />
-          <div
-            onClick={(e) => {
-              e.preventDefault();
-              if (active !== 1) {
-                setActive(1);
-              }
-            }}
-            className={`opacity-60 ${
+
+      {/* HOME PAGE: View More Properties Button */}
+      {isHomePage && (
+        <div className="text-center mt-12">
+          <button
+            onClick={() => navigate("/properties")}
+            className="inline-flex items-center gap-2 bg-[#3d9970] hover:bg-[#327e5c] text-white font-bold px-8 py-4 rounded-2xl shadow-lg shadow-[#3d9970]/30 transition transform hover:-translate-y-0.5 text-base cursor-pointer"
+          >
+            <span>View More Properties</span>
+            <BsArrowRight className="text-lg" />
+          </button>
+        </div>
+      )}
+
+      {/* PROPERTIES PAGE: Pagination */}
+      {!isHomePage && !filterMode && properties.length <= 9 && (
+        <div className="paginator cursor-pointer font-semibold text-lg flex gap-4 items-center justify-center mt-12">
+          <button
+            onClick={() => setActive((prev) => Math.max(1, prev - 1))}
+            disabled={active === 1}
+            className="p-3 rounded-xl bg-white border border-gray-200 text-gray-600 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 transition shadow-xs"
+          >
+            <img src={queryArrow} className="rotate-180 w-3 h-3" alt="previous page" />
+          </button>
+
+          <button
+            onClick={() => setActive(1)}
+            className={`w-10 h-10 rounded-xl font-bold transition ${
               active === 1
-                ? "rounded px-2 py-1 text-white bg-(--accent-color)"
-                : ""
-            } w-8`}
+                ? "bg-[#3d9970] text-white shadow-md shadow-[#3d9970]/30"
+                : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50"
+            }`}
           >
             1
-          </div>
-          <div
-            onClick={(e) => {
-              e.preventDefault();
-              if (active !== 2) {
-                setActive(2);
-              }
-            }}
-            className={`opacity-60 ${
+          </button>
+
+          <button
+            onClick={() => setActive(2)}
+            className={`w-10 h-10 rounded-xl font-bold transition ${
               active === 2
-                ? "rounded-xl px-2 py-1 text-white bg-(--accent-color)"
-                : ""
-            } w-8`}
+                ? "bg-[#3d9970] text-white shadow-md shadow-[#3d9970]/30"
+                : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50"
+            }`}
           >
             2
-          </div>
+          </button>
 
-          <img
-            src={queryArrow}
-            alt="scroll to next arrow"
-            className="opacity-50 active:opacity-100"
-            onClick={() => {
-              setActive((prevActive) => prevActive + 1);
-            }}
-          />
+          <button
+            onClick={() => setActive((prev) => Math.min(2, prev + 1))}
+            disabled={active === 2}
+            className="p-3 rounded-xl bg-white border border-gray-200 text-gray-600 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 transition shadow-xs"
+          >
+            <img src={queryArrow} className="w-3 h-3" alt="next page" />
+          </button>
         </div>
       )}
     </section>

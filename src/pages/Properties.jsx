@@ -5,9 +5,9 @@ import Discover from "../components/Discover";
 
 const Properties = () => {
   return (
-    <main>
+    <main className="min-h-screen">
       <Header />
-      <DisplayProperties />
+      <DisplayProperties isHomePage={false} />
       <Discover />
     </main>
   );
