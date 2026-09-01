@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import filterImg from "../assets/Icon (1).svg";
 import { IoIosArrowDown } from "react-icons/io";
-import { BsFillGeoAltFill, BsShare, BsHeart, BsCartPlus, BsArrowRight } from "react-icons/bs";
+import { BsFillGeoAltFill, BsShare, BsHeart, BsHeartFill, BsCartPlus, BsArrowRight } from "react-icons/bs";
 import imglink1 from "../assets/Vector (9).svg";
 import imglink2 from "../assets/Vector (8).svg";
 import imglink3 from "../assets/Vector (7).svg";
@@ -11,12 +11,14 @@ import { toast } from "react-toastify";
 import queryArrow from "../assets/Vector (10).svg";
 import { ApiContext, PropertiesContext } from "../ApiContext";
 import { CartContext } from "../CartContext";
+import { FavoritesContext } from "../FavoritesContext";
 import { Link, useNavigate } from "react-router-dom";
 import LoaderComp from "./LoaderComp";
 
 const DisplayProperties = ({ isHomePage = false }) => {
   const { propertiesFromApi, setPropertiesFromApi } = useContext(PropertiesContext);
   const { addToCart } = useContext(CartContext);
+  const { isFavorited, toggleFavorite } = useContext(FavoritesContext);
   const navigate = useNavigate();
 
   const [properties, setProperties] = useState([]);
@@ -236,22 +238,16 @@ const DisplayProperties = ({ isHomePage = false }) => {
                 <button
                   onClick={(e) => {
                     e.preventDefault();
-                    const token =
-                      sessionStorage.getItem("token") ||
-                      localStorage.getItem("token") ||
-                      sessionStorage.getItem("firstName") ||
-                      localStorage.getItem("firstName");
-                    if (!token) {
-                      toast.warning("Please sign in to add properties to your favorites.");
-                      navigate("/login");
-                      return;
-                    }
-                    toast.success("Added to favorites!");
+                    toggleFavorite(property, navigate);
                   }}
                   className="bg-white/30 hover:bg-white/50 text-gray-700 rounded-full p-2 shadow-md transition hover:scale-110 cursor-pointer"
-                  title="Favorite"
+                  title={isFavorited(property._id || property.id) ? "Remove Favorite" : "Add Favorite"}
                 >
-                  <BsHeart className="text-sm text-white" />
+                  {isFavorited(property._id || property.id) ? (
+                    <BsHeartFill className="text-sm text-red-500" />
+                  ) : (
+                    <BsHeart className="text-sm text-white" />
+                  )}
                 </button>
                 <button
                   onClick={(e) => {

@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { ApiContext } from "../ApiContext";
 import { CartContext } from "../CartContext";
+import { FavoritesContext } from "../FavoritesContext";
 import { toast } from "react-toastify";
 import {
   BsFillGeoAltFill,
@@ -86,6 +87,7 @@ const PropertyDetail = () => {
   const navigate = useNavigate();
   const myApi = useContext(ApiContext);
   const { addToCart } = useContext(CartContext);
+  const { isFavorited, toggleFavorite } = useContext(FavoritesContext);
 
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -254,26 +256,15 @@ const PropertyDetail = () => {
             {/* Action Badges */}
             <div className="absolute top-4 right-4 flex gap-2.5 z-10">
               <button
-                onClick={() => {
-                  const token =
-                    sessionStorage.getItem("token") ||
-                    localStorage.getItem("token") ||
-                    sessionStorage.getItem("firstName") ||
-                    localStorage.getItem("firstName");
-
-                  if (!token) {
-                    toast.warning("Please sign in to save properties to your wishlist.");
-                    navigate("/login");
-                    return;
-                  }
-
-                  setIsSaved(!isSaved);
-                  toast.success(isSaved ? "Removed from wishlist" : "Saved to your wishlist!");
-                }}
+                onClick={() => toggleFavorite(property, navigate)}
                 className="w-10 h-10 rounded-full bg-white/90 hover:bg-white text-gray-800 flex items-center justify-center shadow-lg transition cursor-pointer"
-                title="Save Property"
+                title={isFavorited(property?._id || property?.id) ? "Remove Favorite" : "Save Property"}
               >
-                {isSaved ? <BsHeartFill className="text-red-500" /> : <BsHeart />}
+                {isFavorited(property?._id || property?.id) ? (
+                  <BsHeartFill className="text-red-500" />
+                ) : (
+                  <BsHeart />
+                )}
               </button>
               <button
                 onClick={() => {

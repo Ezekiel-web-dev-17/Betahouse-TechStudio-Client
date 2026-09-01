@@ -20,6 +20,7 @@ import { ApiProvider } from "./Axios";
 import { ToastContainer } from "react-toastify";
 import { PropertiesProvider } from "./PropertiesContext";
 import { CartProvider } from "./CartContext";
+import { FavoritesProvider } from "./FavoritesContext";
 
 function App() {
   return (
@@ -27,42 +28,44 @@ function App() {
       <ApiProvider>
         <PropertiesProvider>
           <CartProvider>
-            <ToastContainer position="top-right" autoClose={3000} />
-            <BrowserRouter>
-              <ScrollToTop />
-              <Routes>
-                <Route element={<RootLayout />}>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/properties" element={<Properties />} />
-                  <Route path="/properties/:id" element={<PropertyDetail />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/contact" element={<Contact />} />
-                  <Route path="/blog" element={<Blog />} />
-                  <Route path="/blog/:id" element={<BlogPost />} />
-                  <Route
-                    path="/cart"
-                    element={
-                      <ProtectedRoute>
-                        <Cart />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/checkout"
-                    element={
-                      <ProtectedRoute>
-                        <Checkout />
-                      </ProtectedRoute>
-                    }
-                  />
-                </Route>
+            <FavoritesProvider>
+              <ToastContainer position="top-right" autoClose={3000} />
+              <BrowserRouter>
+                <ScrollToTop />
+                <Routes>
+                  <Route element={<RootLayout />}>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/properties" element={<Properties />} />
+                    <Route path="/properties/:id" element={<PropertyDetail />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/contact" element={<Contact />} />
+                    <Route path="/blog" element={<Blog />} />
+                    <Route path="/blog/:id" element={<BlogPost />} />
+                    <Route
+                      path="/cart"
+                      element={
+                        <ProtectedRoute>
+                          <Cart />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/checkout"
+                      element={
+                        <ProtectedRoute>
+                          <Checkout />
+                        </ProtectedRoute>
+                      }
+                    />
+                  </Route>
 
-                <Route element={<AuthLayout />}>
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/sign-up" element={<SignUp />} />
-                </Route>
-              </Routes>
-            </BrowserRouter>
+                  <Route element={<AuthLayout />}>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/sign-up" element={<SignUp />} />
+                  </Route>
+                </Routes>
+              </BrowserRouter>
+            </FavoritesProvider>
           </CartProvider>
         </PropertiesProvider>
       </ApiProvider>
