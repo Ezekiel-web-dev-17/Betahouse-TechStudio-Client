@@ -199,16 +199,16 @@ const DisplayProperties = () => {
         </div>
       )}
 
-      <div className="properties grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+      <div className="properties grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">
         {properties.map((property) => (
           <div
             key={property._id}
             className="rounded-xl border-2 border-gray-300 min-w-3/4 md:min-w-1/3"
           >
-            <div className="max-h-[265px] overflow-hidden relative">
+            <div className="max-h-66.25 overflow-hidden relative">
               <div className="justify-between space-between">
                 <button
-                  className="rounded absolute left-5 top-4 px-5 py-2 bg-[var(--accent-color)] font-medium text-[13px] text-white"
+                  className="rounded absolute left-5 top-4 px-5 py-2 bg-(--accent-color) font-medium text-[13px] text-white"
                   disabled
                 >
                   Featured
@@ -238,7 +238,7 @@ const DisplayProperties = () => {
                 </div>
               </div>
               <img
-                className="rounded-t-xl"
+                className="rounded-t-xl w-full"
                 src={`${property.image.replace("../utils", "/utils")}`}
                 alt=""
               />
@@ -297,7 +297,7 @@ const DisplayProperties = () => {
             }}
             className={`opacity-60 ${
               active === 1
-                ? "rounded px-2 py-1 text-white bg-[var(--accent-color)]"
+                ? "rounded px-2 py-1 text-white bg-(--accent-color)"
                 : ""
             } w-8`}
           >
@@ -312,7 +312,7 @@ const DisplayProperties = () => {
             }}
             className={`opacity-60 ${
               active === 2
-                ? "rounded-xl px-2 py-1 text-white bg-[var(--accent-color)]"
+                ? "rounded-xl px-2 py-1 text-white bg-(--accent-color)"
                 : ""
             } w-8`}
           >

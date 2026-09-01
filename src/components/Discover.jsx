@@ -95,8 +95,9 @@ const Discover = () => {
                   <img
                     src={discover.image.replace("../utils", "/utils")}
                     alt="Discover properties first image"
+                    className="w-full h-full object-cover rounded-xl"
                   />
-                  <div className="absolute bottom-0 w-4/4 flex flex-col items-start gap-2 rounded-b-xl bg-[#4a4a4c33] p-4 backdrop-blur-xs">
+                  <div className="absolute bottom-0 w-full flex flex-col items-start gap-2 rounded-b-xl bg-[#4a4a4c33] p-4 backdrop-blur-xs">
                     <h5 className="font-semibold text-xl">{discover.title}</h5>
                     <h5 className="font-semibold text-xl">₦{discover.price}</h5>
                     <p>6 Bed | 3 Bath | 720 sq ft</p>

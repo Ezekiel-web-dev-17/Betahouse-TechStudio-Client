@@ -12,7 +12,6 @@ export function ApiProvider({ children }) {
   },
 });
 
-
   // Automatically attach token from localStorage, if present
   propertyApi.interceptors.request.use(
     (config) => {

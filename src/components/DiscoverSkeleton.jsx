@@ -6,7 +6,7 @@ const DiscoverSkeleton = () => {
       {[1, 2, 3, 4].map((item) => (
         <div
           key={item}
-          className="relative min-w-11/12 sm:min-w-5/12 lg:min-w-1/4 h-[360px] sm:h-[390px] rounded-xl bg-gray-200 animate-pulse overflow-hidden flex flex-col justify-between p-4"
+          className="relative min-w-11/12 sm:min-w-5/12 lg:min-w-1/4 h-90 sm:h-97.5 rounded-xl bg-gray-200 animate-pulse overflow-hidden flex flex-col justify-between p-4"
         >
           {/* Top placeholder badge */}
           <div className="flex justify-between items-center w-full">
