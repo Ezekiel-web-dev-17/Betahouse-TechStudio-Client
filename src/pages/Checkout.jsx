@@ -1,15 +1,18 @@
 import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { CartContext } from "../CartContext";
+import { ApiContext } from "../ApiContext";
 import { toast } from "react-toastify";
 import { FiArrowLeft, FiCheckCircle, FiShield, FiLock } from "react-icons/fi";
 import { BsFillGeoAltFill, BsCreditCard, BsBank, BsCheck2Circle } from "react-icons/bs";
 
 const Checkout = () => {
   const navigate = useNavigate();
+  const myApi = useContext(ApiContext);
   const { cart, calculateTotal, clearCart } = useContext(CartContext);
   const [isSuccess, setIsSuccess] = useState(false);
   const [orderRef, setOrderRef] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -29,18 +32,76 @@ const Checkout = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleCheckout = (e) => {
+  const handleCheckout = async (e) => {
     e.preventDefault();
     if (!formData.fullName || !formData.email || !formData.phone) {
       toast.error("Please provide your name, email, and phone number.");
       return;
     }
 
-    const randomRef = "BH-" + Math.floor(100000 + Math.random() * 900000);
-    setOrderRef(randomRef);
-    setIsSuccess(true);
-    clearCart();
-    toast.success("Order & Reservation Request Placed Successfully!");
+    if (cart.length === 0) {
+      toast.error("Your cart is empty.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Generate unique Idempotency Key for backend transaction safety
+      const idempotencyKey =
+        typeof crypto !== "undefined" && crypto.randomUUID
+          ? crypto.randomUUID()
+          : "idemp-" + Date.now() + "-" + Math.random().toString(36).substring(2, 9);
+
+      const cartIds = cart.map((item) => (item._id || item.id).toString());
+
+      const payload = {
+        cart: cartIds,
+        buyerInfo: {
+          fullName: formData.fullName,
+          email: formData.email,
+          phone: formData.phone,
+          address: formData.address || formData.city || "Lagos",
+          city: formData.city || "Lagos",
+          notes: formData.notes || "",
+        },
+        paymentMethod: formData.paymentMethod || "Bank Transfer",
+      };
+
+      let resData = null;
+      if (myApi) {
+        const res = await myApi.post("/checkout/initiate", payload, {
+          headers: {
+            "Idempotency-Key": idempotencyKey,
+          },
+        });
+        resData = res.data;
+      }
+
+      const generatedRef =
+        resData?.orderRef ||
+        resData?.reference ||
+        "BH-" + Math.floor(100000 + Math.random() * 900000);
+      setOrderRef(generatedRef);
+
+      toast.success("Property acquisition reservation initiated!");
+      clearCart();
+
+      if (resData?.authorizationUrl) {
+        toast.info("Redirecting to Paystack secure payment gateway...");
+        setTimeout(() => {
+          window.location.href = resData.authorizationUrl;
+        }, 1200);
+      } else {
+        setIsSuccess(true);
+      }
+    } catch (err) {
+      const errMsg =
+        err.response?.data?.message || "Failed to initiate checkout. Please try again.";
+      toast.error(errMsg);
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (isSuccess) {
@@ -260,9 +321,10 @@ const Checkout = () => {
 
               <button
                 type="submit"
-                className="w-full bg-[#3d9970] hover:bg-[#327e5c] text-white font-bold py-4 rounded-xl transition shadow-lg shadow-[#3d9970]/30 text-base cursor-pointer flex items-center justify-center gap-2"
+                disabled={loading}
+                className="w-full bg-[#3d9970] hover:bg-[#327e5c] text-white font-bold py-4 rounded-xl transition shadow-lg shadow-[#3d9970]/30 text-base cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <FiCheckCircle /> Confirm & Place Reservation (₦{total.toLocaleString()})
+                <FiCheckCircle /> {loading ? "Initiating Secure Reservation..." : `Confirm & Place Reservation (₦${total.toLocaleString()})`}
               </button>
             </form>
           </div>

@@ -12,6 +12,9 @@ import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
+import Favorites from "./pages/Favorites";
+import Orders from "./pages/Orders";
+import VerifyPayment from "./pages/VerifyPayment";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import ScrollToTop from "./components/ScrollToTop";
@@ -54,6 +57,30 @@ function App() {
                       element={
                         <ProtectedRoute>
                           <Checkout />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/checkout/verify/:reference?"
+                      element={
+                        <ProtectedRoute>
+                          <VerifyPayment />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/favorites"
+                      element={
+                        <ProtectedRoute>
+                          <Favorites />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/orders"
+                      element={
+                        <ProtectedRoute>
+                          <Orders />
                         </ProtectedRoute>
                       }
                     />

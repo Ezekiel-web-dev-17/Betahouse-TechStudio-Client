@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { IoIosMenu } from "react-icons/io";
 import { CgClose } from "react-icons/cg";
-import { BsPerson, BsCart3 } from "react-icons/bs";
+import { BsPerson, BsCart3, BsHeart, BsBagCheck } from "react-icons/bs";
 import { FaChevronDown } from "react-icons/fa";
 import logo from "../assets/bhlogo.png";
 import { CartContext } from "../CartContext";
@@ -93,38 +93,64 @@ const NavBar = () => {
         </ul>
 
         <div className="text-white flex items-center gap-5">
-          {/* Cart Icon - Visible ONLY to signed-in users */}
+          {/* Favorites & Cart Icons - Visible ONLY to signed-in users */}
           {isAuthenticated && (
-            <Link
-              to="/cart"
-              className="relative p-2 text-white hover:text-[#85e3b5] transition"
-              title="Shopping Cart"
-            >
-              <BsCart3 className="text-2xl" />
-              <span className="absolute -top-1 -right-1 bg-[#3d9970] text-white text-[11px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-md">
-                {cartCount}
-              </span>
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link
+                to="/favorites"
+                className="p-2 text-white hover:text-[#85e3b5] transition text-xl"
+                title="Saved Favorites"
+              >
+                <BsHeart />
+              </Link>
+              <Link
+                to="/cart"
+                className="relative p-2 text-white hover:text-[#85e3b5] transition"
+                title="Shopping Cart"
+              >
+                <BsCart3 className="text-2xl" />
+                <span className="absolute -top-1 -right-1 bg-[#3d9970] text-white text-[11px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-md">
+                  {cartCount}
+                </span>
+              </Link>
+            </div>
           )}
 
           {firstname && lastname ? (
             <div className="flex gap-x-3 items-center relative cursor-pointer">
-              <BsPerson className="text-xl" />
-              <h4 className="font-semibold text-sm">
-                {user.firstname} {user.lastname}
-              </h4>
-              <FaChevronDown
-                className="text-xs"
+              <div
+                className="flex items-center gap-2"
                 onClick={() => setLoggedIn(!loggedIn)}
-              />
+              >
+                <BsPerson className="text-xl" />
+                <h4 className="font-semibold text-sm">
+                  {user.firstname} {user.lastname}
+                </h4>
+              </div>
               {loggedIn && (
-                <div className="absolute top-8 right-0 bg-[#1d293f] border border-white/20 rounded-xl py-2 px-4 shadow-xl z-50">
-                  <button
-                    onClick={handleLogout}
-                    className="text-xs font-bold text-red-400 hover:text-red-300 cursor-pointer text-nowrap"
+                <div className="absolute top-10 right-0 bg-[#1d293f] border border-white/20 rounded-2xl py-3 px-4 shadow-2xl z-50 flex flex-col gap-2.5 min-w-[170px]">
+                  <Link
+                    to="/favorites"
+                    onClick={() => setLoggedIn(false)}
+                    className="text-xs font-semibold text-gray-200 hover:text-[#85e3b5] flex items-center gap-2 transition"
                   >
-                    Log Out
-                  </button>
+                    <BsHeart className="text-sm" /> Saved Favorites
+                  </Link>
+                  <Link
+                    to="/orders"
+                    onClick={() => setLoggedIn(false)}
+                    className="text-xs font-semibold text-gray-200 hover:text-[#85e3b5] flex items-center gap-2 transition"
+                  >
+                    <BsBagCheck className="text-sm" /> My Reservations
+                  </Link>
+                  <div className="border-t border-white/10 pt-2">
+                    <button
+                      onClick={handleLogout}
+                      className="text-xs font-bold text-red-400 hover:text-red-300 cursor-pointer text-nowrap w-full text-left"
+                    >
+                      Log Out
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
@@ -235,21 +261,41 @@ const NavBar = () => {
                 >
                   Contact Us
                 </Link>
-                {/* Mobile Drawer Cart Link - Visible ONLY to signed-in users */}
+                {/* Mobile Drawer Favorites, Cart & Orders Links - Visible ONLY to signed-in users */}
                 {isAuthenticated && (
-                  <Link
-                    to="/cart"
-                    className={`p-2 rounded-lg transition flex items-center justify-between ${
-                      location.pathname === "/cart" ? "bg-[#3d9970] font-bold" : "hover:bg-white/10"
-                    }`}
-                  >
-                    <span>Cart</span>
-                    {cartCount > 0 && (
-                      <span className="bg-white/20 text-white text-xs px-2 py-0.5 rounded-full font-bold">
-                        {cartCount}
-                      </span>
-                    )}
-                  </Link>
+                  <>
+                    <Link
+                      to="/favorites"
+                      className={`p-2 rounded-lg transition flex items-center justify-between ${
+                        location.pathname === "/favorites" ? "bg-[#3d9970] font-bold" : "hover:bg-white/10"
+                      }`}
+                    >
+                      <span>Saved Favorites</span>
+                      <BsHeart className="text-sm" />
+                    </Link>
+                    <Link
+                      to="/orders"
+                      className={`p-2 rounded-lg transition flex items-center justify-between ${
+                        location.pathname === "/orders" ? "bg-[#3d9970] font-bold" : "hover:bg-white/10"
+                      }`}
+                    >
+                      <span>My Reservations</span>
+                      <BsBagCheck className="text-sm" />
+                    </Link>
+                    <Link
+                      to="/cart"
+                      className={`p-2 rounded-lg transition flex items-center justify-between ${
+                        location.pathname === "/cart" ? "bg-[#3d9970] font-bold" : "hover:bg-white/10"
+                      }`}
+                    >
+                      <span>Cart</span>
+                      {cartCount > 0 && (
+                        <span className="bg-white/20 text-white text-xs px-2 py-0.5 rounded-full font-bold">
+                          {cartCount}
+                        </span>
+                      )}
+                    </Link>
+                  </>
                 )}
               </ul>
 

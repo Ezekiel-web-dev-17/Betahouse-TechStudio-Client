@@ -130,18 +130,27 @@ const PropertyDetail = () => {
       return;
     }
     try {
+      const payload = {
+        name: tourForm.name,
+        email: tourForm.email || "",
+        phone: tourForm.phone || "",
+        propertyId: property?._id || property?.id,
+        propertyTitle: property?.title || "",
+        date: tourForm.date,
+        time: tourForm.time || "10:00 AM",
+        tourType: tourForm.tourType || "In-Person",
+      };
+
       if (myApi) {
-        await myApi.post("/tour", {
-          ...tourForm,
-          propertyId: property?._id || property?.id,
-          propertyTitle: property?.title || "",
-        });
+        const res = await myApi.post("/tour", payload);
+        toast.success(res.data?.message || `Tour requested for ${tourForm.date} at ${tourForm.time}! An agent will contact you.`);
+      } else {
+        toast.success(`Tour requested for ${tourForm.date} at ${tourForm.time}! An agent will contact you shortly.`);
       }
-      toast.success(`Tour requested for ${tourForm.date} at ${tourForm.time}! An agent will contact you shortly.`);
       setTourForm({ name: "", email: "", phone: "", date: "", time: "10:00 AM", tourType: "In-Person" });
     } catch (err) {
-      toast.success(`Tour requested for ${tourForm.date} at ${tourForm.time}! An agent will contact you shortly.`);
-      setTourForm({ name: "", email: "", phone: "", date: "", time: "10:00 AM", tourType: "In-Person" });
+      const errMsg = err.response?.data?.message || "Failed to schedule tour. Please try another date/time.";
+      toast.error(errMsg);
     }
   };
 

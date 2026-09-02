@@ -1,10 +1,39 @@
-import React from "react";
+import React, { useState, useContext } from "react";
 import logo from "../assets/bhlogo.png";
 import { GrMail } from "react-icons/gr";
-import { BsTelephoneFill, BsFillGeoAltFill } from "react-icons/bs";
+import { BsTelephoneFill, BsFillGeoAltFill, BsSendCheck } from "react-icons/bs";
 import { Link } from "react-router-dom";
+import { ApiContext } from "../ApiContext";
+import { toast } from "react-toastify";
 
 const Footer = () => {
+  const myApi = useContext(ApiContext);
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubscribe = async (e) => {
+    e.preventDefault();
+    if (!email || !email.includes("@")) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
+    setLoading(true);
+    try {
+      if (myApi) {
+        const res = await myApi.post("/newsletter", { email });
+        toast.success(res.data?.message || "Subscribed to market updates and property alerts!");
+      } else {
+        toast.success("Subscribed to market updates and property alerts!");
+      }
+      setEmail("");
+    } catch (err) {
+      const msg = err.response?.data?.message || "Could not subscribe. Please try again.";
+      toast.error(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <footer className="text-logo bg-[#3d9970] text-white">
       {/* Top Section */}
@@ -34,8 +63,8 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Menu Links */}
-        <div className="menu flex flex-col sm:flex-row justify-between w-full md:w-2/3 gap-10 sm:gap-20">
+        {/* Menu Links + Newsletter */}
+        <div className="menu flex flex-col sm:flex-row justify-between w-full md:w-2/3 gap-10 sm:gap-16">
           <div className="links flex flex-col items-start gap-4">
             <h4 className="font-bold text-lg md:text-xl text-white">
               Quick Links
@@ -67,12 +96,29 @@ const Footer = () => {
             <Link to="/contact#FAQ" className="cursor-pointer hover:underline text-white">FAQ's</Link>
           </div>
 
-          <div className="links flex flex-col items-start gap-4">
-            <h4 className="font-semibold text-lg md:text-xl text-white">Popular Search</h4>
-            <span className="opacity-75 cursor-not-allowed">Apartment for sale</span>
-            <span className="opacity-75 cursor-not-allowed">Apartment for rent</span>
-            <span className="opacity-75 cursor-not-allowed">3 bedroom flat</span>
-            <span className="opacity-75 cursor-not-allowed">Bungalow</span>
+          <div className="links flex flex-col items-start gap-4 max-w-xs">
+            <h4 className="font-semibold text-lg md:text-xl text-white">Subscribe Newsletter</h4>
+            <p className="text-xs text-gray-100 leading-relaxed">
+              Get notified on new luxury property listings, market reports, and investment alerts.
+            </p>
+            <form onSubmit={handleSubscribe} className="w-full space-y-2.5 mt-1">
+              <input
+                type="email"
+                required
+                placeholder="Your email address..."
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-3.5 py-2.5 rounded-xl bg-white/10 text-white placeholder-gray-200 border border-white/20 text-xs focus:outline-none focus:bg-white/20 transition"
+              />
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-white text-[#3d9970] font-bold py-2.5 px-4 rounded-xl text-xs hover:bg-gray-100 transition shadow-md flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+              >
+                <BsSendCheck className="text-sm" />
+                {loading ? "Subscribing..." : "Subscribe Now"}
+              </button>
+            </form>
           </div>
         </div>
       </div>
