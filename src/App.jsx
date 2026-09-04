@@ -15,6 +15,7 @@ import Checkout from "./pages/Checkout";
 import Favorites from "./pages/Favorites";
 import Orders from "./pages/Orders";
 import VerifyPayment from "./pages/VerifyPayment";
+import OrderSuccess from "./pages/OrderSuccess";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import ScrollToTop from "./components/ScrollToTop";
@@ -65,6 +66,14 @@ function App() {
                       element={
                         <ProtectedRoute>
                           <VerifyPayment />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/order-success"
+                      element={
+                        <ProtectedRoute>
+                          <OrderSuccess />
                         </ProtectedRoute>
                       }
                     />

@@ -4,6 +4,7 @@ import "./index.css";
 import App from "./App.jsx";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 const CLIENT_ID =
+  import.meta.env.VITE_GOOGLE_CLIENT_ID ||
   "290609921827-7qs80204cvk4uuquut3cqhdent2c1qdq.apps.googleusercontent.com";
 
 createRoot(document.getElementById("root")).render(
